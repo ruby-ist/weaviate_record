@@ -5,17 +5,21 @@ module WeaviateRecord
   module MethodMissing
     private
 
+    def list_of_attributes
+      [*properties_list(collection_name), *WeaviateRecord::Constants::META_ATTRIBUTES]
+    end
+
     def method_missing(name, *args)
       method = name.to_s
-      if [*properties_list(collection_name), *Weaviate::Constants::META_ATTRIBUTES].include? method
-        raise Weaviate::Errors::MissingAttributeError, "missing attribute: #{method}"
+      if list_of_attributes.include? method
+        raise WeaviateRecord::Errors::MissingAttributeError, "missing attribute: #{method}"
       end
 
       super
     end
 
     def respond_to_missing?(*_args)
-      super
+      list_of_attributes.include?(method) ? true : super
     end
   end
 end
