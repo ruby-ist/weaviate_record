@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-module Weaviate
+module WeaviateRecord
   module Queries
     # This module contains function to perform where query on Weaviate
     module WhereQuery

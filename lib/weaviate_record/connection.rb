@@ -5,6 +5,15 @@ require 'weaviate'
 module Weaviate
   # This class is used to create a Weaviate connection
   class Connection
+    def initialize
+      @client ||= Weaviate::Client.new(
+        url: ENV['WEAVIATE_DATABASE_URL'],
+        api_key: ENV['WEAVIATE_API_KEY'],
+        model_service: ENV['WEAVIATE_VECTORIZER_MODULE']&.to_sym,
+        model_service_api_key: ENV['WEAVIATE_VECTORIZER_API_KEY'],
+      )
+    end
+
     class << self
       STRUCTURE_FILE_BOILERPLATE = lambda do |schema|
         <<~RUBY
@@ -21,10 +30,6 @@ module Weaviate
             end
           end
         RUBY
-      end
-
-      def create_client
-        @create_client ||= Weaviate::Client.new(url: ENV['WEAVIATE_DATABASE_URL'])
       end
 
       def update_schema

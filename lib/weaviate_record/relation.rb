@@ -2,24 +2,24 @@ module WeaviateRecord
   class Relation
     extend Forwardable
     include Enumerable
-    include Weaviate::Helpers::SchemaHelpers
-    include Weaviate::Queries::Bm25Query
-    include Weaviate::Queries::CountQuery
-    include Weaviate::Queries::LimitQuery
-    include Weaviate::Queries::NearTextQuery
-    include Weaviate::Queries::OffsetQuery
-    include Weaviate::Queries::OrderQuery
-    include Weaviate::Queries::SelectQuery
-    include Weaviate::Queries::WhereQuery
+    include WeaviateRecord::Helpers::SchemaHelpers
+    include WeaviateRecord::Queries::Bm25
+    include WeaviateRecord::Queries::Count
+    include WeaviateRecord::Queries::Limit
+    include WeaviateRecord::Queries::NearText
+    include WeaviateRecord::Queries::Offset
+    include WeaviateRecord::Queries::Order
+    include WeaviateRecord::Queries::Select
+    include WeaviateRecord::Queries::Where
 
-    def_delegators(:records, :empty?, :present?)
+    def_delegators(:records, :empty?, :present?, :all)
 
     def initialize(klass)
       @select_options = { attributes: [], nested_attributes: {} }
       @near_text_options = { concepts: [], distance: DEFAULT_DISTANCE }
-      @limit = 1000
+      @limit = ENV['WEAVIATE_DEFAULT_LIMIT'] || 25
       @offset = 0
-      @klass = klass.to_s
+      @klass = klass
       @records = []
       @loaded = false
     end
@@ -36,8 +36,8 @@ module WeaviateRecord
     alias to_a inspect
 
     def to_query
-      query_params = { class_name: @klass, limit: @limit.to_s, offset: @offset.to_s, fields: combined_fields }
-      query_params[:near_text] = format_near_text unless @near_text_options[:concepts].empty?
+      query_params = { class_name: @klass.to_s, limit: @limit.to_s, offset: @offset.to_s, fields: combined_fields }
+      query_params[:near_text] = formatted_near_text_value unless @near_text_options[:concepts].empty?
       query_params[:bm25] = "{ query: #{@keyword_search.inspect} }" if @keyword_search.present?
       query_params[:where] = @where_query if @where_query
       # Weaviate doesn't support sorting with bm25 search at the time of writing this code.
@@ -52,13 +52,12 @@ module WeaviateRecord
     def records
       return @records if @loaded
 
-      client = Weaviate::Connection.create_client
       query = to_query
       custom_selection = query[:fields].present?
       query[:fields] = create_or_process_select_fields(custom_selection, query[:fields])
-      result = client.query.get(**query)
+      result = WeaviateRecord::Connection.new.query.get(**query)
       @loaded = true
-      @records = result.map { |record| @klass.constantize.new(queried: custom_selection, **record) }
+      @records = result.map { |record| @klass.new(queried: custom_selection, **record) }
     end
   end
 end

@@ -1,4 +1,4 @@
-module Weaviate
+module WeaviateRecord
   module Queries
     # This module contains function to perform select query on Weaviate
     module SelectQuery
