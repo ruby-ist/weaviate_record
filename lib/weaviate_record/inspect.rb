@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module WeaviateRecord
   # Inspect definition for Weaviate Record
   module Inspect

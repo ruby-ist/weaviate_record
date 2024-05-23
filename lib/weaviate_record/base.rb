@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module WeaviateRecord
   class Base
     extend ActiveModel::Naming

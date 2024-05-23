@@ -1,7 +1,9 @@
+# frozen_string_literal: true
+
 module WeaviateRecord
   module Queries
     # This module contains function to perform select query on Weaviate
-    module SelectQuery
+    module Select
       def select(*args)
         args.each do |arg|
           if arg.is_a? Hash

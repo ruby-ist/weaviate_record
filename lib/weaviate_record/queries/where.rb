@@ -3,7 +3,7 @@
 module WeaviateRecord
   module Queries
     # This module contains function to perform where query on Weaviate
-    module WhereQuery
+    module Where
       def where(query = '', *values, **kw_args)
         if values.empty? && kw_args.empty?
           raise Weaviate::Errors::InvalidWhereQueryError, 'invalid argument for where query'

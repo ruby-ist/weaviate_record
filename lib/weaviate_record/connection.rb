@@ -6,11 +6,11 @@ module Weaviate
   # This class is used to create a Weaviate connection
   class Connection
     def initialize
-      @client ||= Weaviate::Client.new(
+      @client = Weaviate::Client.new(
         url: ENV['WEAVIATE_DATABASE_URL'],
         api_key: ENV['WEAVIATE_API_KEY'],
         model_service: ENV['WEAVIATE_VECTORIZER_MODULE']&.to_sym,
-        model_service_api_key: ENV['WEAVIATE_VECTORIZER_API_KEY'],
+        model_service_api_key: ENV['WEAVIATE_VECTORIZER_API_KEY']
       )
     end
 
