@@ -1,15 +1,15 @@
 # frozen_string_literal: true
 
 module WeaviateRecord
+  # Base class for Weaviate records
   class Base
     extend ActiveModel::Naming
     include ActiveModel::Conversion
     include ActiveModel::Validations
     include Weaviate::Helpers::RecordHelpers
-    include Weaviate::Helpers::SchemaHelpers
     include Weaviate::Record::AttributeHandlers
-    include Weaviate::Record::Inspect
-    include Weaviate::Record::MethodMissing
+    include WeaviateRecord::Inspect
+    include WeaviateRecord::MethodMissing
     include Weaviate::Record::QueryHandlers
     attr_reader :additional, :attributes, :queried_record
     private :additional, :attributes, :queried_record

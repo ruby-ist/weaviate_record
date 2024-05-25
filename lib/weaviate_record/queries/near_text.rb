@@ -4,7 +4,7 @@ module WeaviateRecord
   module Queries
     # This module contains functions to perform near_text query (Context Based Search)
     module NearText
-      def near_text(*texts, distance: WeaviateRecord::Constants::NEAR_TEXT_DEFAULT_DISTANCE)
+      def near_text(*texts, distance: WeaviateRecord.config.near_text_default_distance)
         raise TypeError, 'invalid value for text' unless texts.all? { |text| text.is_a?(String) }
         raise TypeError, 'Invalid value for distance' unless distance.is_a?(Numeric)
 

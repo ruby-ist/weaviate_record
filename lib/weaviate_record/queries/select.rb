@@ -20,42 +20,44 @@ module WeaviateRecord
 
       attr_reader :select_options, :klass
 
-      def combined_fields
-        field_names = format_array_element(@select_options[:attributes]) << ' '
+      def combined_select_attributes
+        attributes = format_array_attribute(select_options[:attributes])
+        return attributes if select_options[:nested_attributes].empty?
 
-        if @select_options[:nested_attributes].present?
-          field_names << format_hash_element(@select_options[:nested_attributes])
-        end
-        field_names.rstrip
+        "#{attributes} #{format_nested_attribute(select_options[:nested_attributes])}"
       end
 
-      def create_or_process_select_fields(custom, fields)
-        if custom
-          fields.gsub(/(?<=\s)(#{Weaviate::Constants::SPECIAL_ATTRIBUTE_MAPPINGS.keys.join('|')})(?=\s)/,
-                      Weaviate::Constants::SPECIAL_ATTRIBUTE_MAPPINGS)
+      def create_or_process_select_attributes(custom_selected, attributes)
+        if custom_selected
+          attributes.gsub(/(?<=\s)(#{WeaviateRecord::Constants::SPECIAL_ATTRIBUTE_MAPPINGS.keys.join('|')})(?=\s)/,
+                          WeaviateRecord::Constants::SPECIAL_ATTRIBUTE_MAPPINGS)
         else
-          properties_list(klass).join(' ') << ' _additional { id creationTimeUnix lastUpdateTimeUnix }'
+          [
+            *WeaviateRecord::Schema.find_collection(klass).attributes_list,
+            '_additional { id creationTimeUnix lastUpdateTimeUnix }'
+          ].join(' ')
         end
       end
 
-      def format_array_element(array)
-        array.inject('') do |acc, element|
-          acc << case element
-                 when String, Symbol then "#{element} "
-                 when Array then format_array_element(element) << ' '
-                 when Hash then format_hash_element(element) << ' ' else raise ArgumentError
-                 end
-        end.rstrip
+      def format_array_attribute(array)
+        array.map do |attribute|
+          case attribute
+          when String, Symbol then attribute.to_s
+          when Array then format_array_attribute(attribute)
+          when Hash then format_nested_attribute(attribute)
+          else raise TypeError
+          end
+        end.join(' ')
       end
 
-      def format_hash_element(hash)
-        return_string = ''
+      def format_nested_attribute(hash)
+        return_string = String.new
         hash.each do |key, value|
           return_string << key.to_s << ' { '
           case value
           when String, Symbol then return_string << value.to_s << ' } '
-          when Array then return_string << format_array_element(value) << ' } '
-          when Hash then return_string << format_hash_element(value) << ' } ' else raise ArgumentError
+          when Array then return_string << format_array_attribute(value) << ' } '
+          when Hash then return_string << format_nested_attribute(value) << ' } ' else raise TypeError
           end
         end
         return_string.rstrip

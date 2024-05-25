@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 module WeaviateRecord
+  # This class is used to build weaviate queries
   class Relation
     extend Forwardable
     include Enumerable
@@ -38,7 +39,8 @@ module WeaviateRecord
     alias to_a inspect
 
     def to_query
-      query_params = { class_name: @klass.to_s, limit: @limit.to_s, offset: @offset.to_s, fields: combined_fields }
+      query_params = { class_name: @klass.to_s, limit: @limit.to_s, offset: @offset.to_s,
+                       fields: combined_select_attributes }
       query_params[:near_text] = formatted_near_text_value unless @near_text_options[:concepts].empty?
       query_params[:bm25] = "{ query: #{@keyword_search.inspect} }" if @keyword_search.present?
       query_params[:where] = @where_query if @where_query
@@ -56,7 +58,7 @@ module WeaviateRecord
 
       query = to_query
       custom_selection = query[:fields].present?
-      query[:fields] = create_or_process_select_fields(custom_selection, query[:fields])
+      query[:fields] = create_or_process_select_attributes(custom_selection, query[:fields])
       result = WeaviateRecord::Connection.new.query.get(**query)
       @loaded = true
       @records = result.map { |record| @klass.new(queried: custom_selection, **record) }

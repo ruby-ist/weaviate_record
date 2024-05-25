@@ -8,7 +8,7 @@ module WeaviateRecord
       def bm25(text)
         raise TypeError, 'text must be a string' unless text.is_a?(String)
 
-        self.keyword_search = text unless text.empty?
+        self.keyword_search = text if text.present?
         self.loaded = false
         self
       end

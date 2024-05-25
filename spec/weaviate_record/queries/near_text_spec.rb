@@ -10,10 +10,11 @@ RSpec.describe WeaviateRecord::Queries::NearText do
     end
   end
   let(:instance) { klass.new }
+
   before do
     instance.instance_variable_set(:@near_text_options, {
                                      concepts: [],
-                                     distance: WeaviateRecord::Constants::NEAR_TEXT_DEFAULT_DISTANCE
+                                     distance: WeaviateRecord.config.near_text_default_distance
                                    })
   end
 
@@ -41,7 +42,7 @@ RSpec.describe WeaviateRecord::Queries::NearText do
           instance.near_text('text')
           expect(instance
                    .instance_variable_get(:@near_text_options)[:distance])
-            .to eq(WeaviateRecord::Constants::NEAR_TEXT_DEFAULT_DISTANCE)
+            .to eq(WeaviateRecord.config.near_text_default_distance)
         end
       end
 
@@ -62,7 +63,7 @@ RSpec.describe WeaviateRecord::Queries::NearText do
 
     it 'sets loaded to false' do
       instance.near_text('text')
-      expect(instance.instance_variable_get(:@loaded)).to eq(false)
+      expect(instance.instance_variable_get(:@loaded)).to be(false)
     end
 
     it 'returns self' do

@@ -16,8 +16,6 @@ module WeaviateRecord
                           Float => 'valueNumber', TrueClass => 'valueBoolean', FalseClass => 'valueBoolean' }.freeze
 
     META_ATTRIBUTES = %w[vector certainty distance feature_projection classification creation_at updated_at].freeze
-
-    NEAR_TEXT_DEFAULT_DISTANCE = 0.55
   end
 end
 

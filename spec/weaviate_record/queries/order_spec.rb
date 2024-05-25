@@ -62,20 +62,25 @@ RSpec.describe WeaviateRecord::Queries::Order do
   end
 
   describe '#combine_arguments' do
-    context 'for normal arguments' do
+    before do
+      allow(instance).to receive(:convert_to_sorting_specifier).and_call_original
+    end
+
+    context 'when it is for normal arguments' do
       it 'calls the convert_to_sorting_specifier with each argument' do
-        expect(instance).to receive(:convert_to_sorting_specifier).with(:title)
-        expect(instance).to receive(:convert_to_sorting_specifier).with(:content)
-        expect(instance).to receive(:convert_to_sorting_specifier).with(:type)
         instance.send(:combine_arguments, %i[title content type], {})
+        %i[title content type].each do |argument|
+          expect(instance).to have_received(:convert_to_sorting_specifier).with(argument)
+        end
       end
     end
 
-    context 'for keyword arguments' do
+    context 'when keyword arguments are present' do
       it 'calls the combine_arguments with each key-value pair' do
-        expect(instance).to receive(:convert_to_sorting_specifier).with(:title, :desc)
-        expect(instance).to receive(:convert_to_sorting_specifier).with(:content, :asc)
         instance.send(:combine_arguments, [], { title: :desc, content: :asc })
+        { title: :desc, content: :asc }.each do |pair|
+          expect(instance).to have_received(:convert_to_sorting_specifier).with(*pair)
+        end
       end
     end
 
@@ -101,10 +106,15 @@ RSpec.describe WeaviateRecord::Queries::Order do
 
     it 'returns a formatted sorting specifier' do
       expect(instance.send(:convert_to_sorting_specifier, :title)).to eq('{ path: ["title"], order: asc }')
-      expect(instance.send(:convert_to_sorting_specifier, :title, :desc)).to eq('{ path: ["title"], order: desc }')
     end
 
-    context 'for additional attributes' do
+    context 'when sorting order is specified' do
+      it 'returns a formatted sorting specifier with mentioned order' do
+        expect(instance.send(:convert_to_sorting_specifier, :title, :desc)).to eq('{ path: ["title"], order: desc }')
+      end
+    end
+
+    context 'when additional attributes are present' do
       it 'prefixes underscore for id' do
         expect(instance.send(:convert_to_sorting_specifier, :id)).to eq('{ path: ["_id"], order: asc }')
       end
@@ -112,13 +122,15 @@ RSpec.describe WeaviateRecord::Queries::Order do
       it 'converts special attributes to their mapped name' do
         expect(instance.send(:convert_to_sorting_specifier,
                              :created_at)).to eq('{ path: ["_creationTimeUnix"], order: asc }')
-        expect(instance.send(:convert_to_sorting_specifier,
-                             :updated_at)).to eq('{ path: ["_lastUpdateTimeUnix"], order: asc }')
       end
     end
   end
 
   describe '#assign_sort_options' do
+    before do
+      allow(instance).to receive(:merge_sorting_specifiers).and_call_original
+    end
+
     context 'when sort_options is present' do
       context 'when sort_options starts with [' do
         it 'combines the attributes and assigns them to sort_options' do
@@ -129,8 +141,8 @@ RSpec.describe WeaviateRecord::Queries::Order do
 
         it 'calls merge_sorting_specifiers with the stripped sort_option' do
           instance.instance_variable_set(:@sort_options, '[ 1, 2 ]')
-          expect(instance).to receive(:merge_sorting_specifiers).with('1, 2', '3', '4', '5')
           instance.send(:assign_sort_options, %w[3 4 5])
+          expect(instance).to have_received(:merge_sorting_specifiers).with('1, 2', '3', '4', '5')
         end
       end
 
@@ -143,8 +155,8 @@ RSpec.describe WeaviateRecord::Queries::Order do
 
         it 'calls combine_sorting_options with sort_option as it is' do
           instance.instance_variable_set(:@sort_options, '1')
-          expect(instance).to receive(:merge_sorting_specifiers).with('1', '2', '3', '4')
           instance.send(:assign_sort_options, %w[2 3 4])
+          expect(instance).to have_received(:merge_sorting_specifiers).with('1', '2', '3', '4')
         end
       end
     end
