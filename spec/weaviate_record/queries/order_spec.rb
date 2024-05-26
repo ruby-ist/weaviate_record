@@ -28,37 +28,39 @@ RSpec.describe WeaviateRecord::Queries::Order do
       end.to raise_error(ArgumentError, 'expected at least one argument')
     end
 
-    # context 'On queries' do
-    #   context 'for single argument' do
-    #     let!(:documents) do
-    #       10.times.map do |index|
-    #         DocumentTest.create(title: "test document #{index}")
-    #       end
-    #     end
-    #     after { documents.each(&:destroy) }
+    context 'with queries' do
+      context 'with single argument' do
+        let!(:articles) do
+          10.times.map do |index|
+            Article.create(title: "test article #{index}")
+          end
+        end
 
-    #     it 'sorts the records' do
-    #       expect(DocumentTest.order(:title).map(&:title)).to eq(documents.map(&:title).sort)
-    #     end
+        after { articles.each(&:destroy) }
 
-    #     it 'can take keyword arguments for sorting order' do
-    #       expect(DocumentTest.order(title: :desc).map(&:title)).to eq(documents.map(&:title).sort.reverse)
-    #     end
-    #   end
+        it 'sorts the records' do
+          expect(Article.order(:title).map(&:title)).to eq(articles.map(&:title).sort)
+        end
 
-    #   context 'for multiple arguments' do
-    #     let!(:documents) do
-    #       6.times.map do |index|
-    #         DocumentTest.create(title: "test document #{index & 1}")
-    #       end
-    #     end
-    #     after { documents.each(&:destroy) }
+        it 'can take keyword arguments for sorting order' do
+          expect(Article.order(title: :desc).map(&:title)).to eq(articles.map(&:title).sort.reverse)
+        end
+      end
 
-    #     it 'sorts the records based on them' do
-    #       expect(DocumentTest.order(:title, :id).map(&:id)).to eq(documents.sort_by { [_1.title, _1.id] }.map!(&:id))
-    #     end
-    #   end
-    # end
+      context 'with multiple arguments' do
+        let!(:articles) do
+          6.times.map do |index|
+            Article.create(title: "test article #{index & 1}")
+          end
+        end
+
+        after { articles.each(&:destroy) }
+
+        it 'sorts the records based on them' do
+          expect(Article.order(:title, :id).map(&:id)).to eq(articles.sort_by { [_1.title, _1.id] }.map!(&:id))
+        end
+      end
+    end
   end
 
   describe '#combine_arguments' do

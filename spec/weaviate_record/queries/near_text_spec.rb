@@ -70,18 +70,19 @@ RSpec.describe WeaviateRecord::Queries::NearText do
       expect(instance.near_text('text')).to eq(instance)
     end
 
-    # context 'on queries' do
-    #   let!(:documents) do
-    #     [DocumentTest.create(content: 'Rently was established in 2011'),
-    #      DocumentTest.create(content: 'Sometimes rently may ban a lead for suspicious reason'),
-    #      DocumentTest.create(content: 'Rently is a company that provides self-showing technology')]
-    #   end
-    #   after { documents.each(&:destroy) }
+    context 'with queries' do
+      let!(:articles) do
+        [Article.create(content: 'Rently was established in 2011'),
+         Article.create(content: 'Sometimes rently may ban a lead for suspicious reason'),
+         Article.create(content: 'Rently is a company that provides self-showing technology')]
+      end
 
-    #   it 'returns the record based on semantic search' do
-    #     expect(DocumentTest.near_text('why my lead got banned').first.id).to eq(documents[1].id)
-    #   end
-    # end
+      after { articles.each(&:destroy) }
+
+      it 'returns the record based on semantic search' do
+        expect(Article.near_text('why my lead got banned').first.id).to eq(articles[1].id)
+      end
+    end
   end
 
   describe '#formatted_near_text_value' do

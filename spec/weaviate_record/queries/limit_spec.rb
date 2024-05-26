@@ -31,26 +31,26 @@ RSpec.describe WeaviateRecord::Queries::Limit do
       expect(instance.limit(1)).to be(instance)
     end
 
-    # context 'On queries' do
-    #   let!(:documents) do
-    #     10.times.map do |index|
-    #       DocumentTest.create(title: "test document #{index}")
-    #     end
-    #   end
-    #   after { documents.each(&:destroy) }
+    context 'with queries' do
+      let!(:articles) do
+        10.times.map do |index|
+          Article.create(title: "test article #{index}")
+        end
+      end
 
-    #   context 'when the given limit is less than total record' do
-    #     it 'restricts the number of records' do
-    #       expect(DocumentTest.limit(2).to_a.count).to eq(2)
-    #       expect(DocumentTest.limit(5).to_a.count).to eq(5)
-    #     end
-    #   end
+      after { articles.each(&:destroy) }
 
-    #   context 'when the given limit is greater than total record' do
-    #     it 'returns all the records' do
-    #       expect(DocumentTest.limit(15).count).to eq(10)
-    #     end
-    #   end
-    # end
+      context 'when the given limit is less than total record' do
+        it 'restricts the number of records' do
+          expect(Article.limit(2).to_a.count).to eq(2)
+        end
+      end
+
+      context 'when the given limit is greater than total record' do
+        it 'returns all the records' do
+          expect(Article.limit(15).count).to eq(10)
+        end
+      end
+    end
   end
 end

@@ -4,3 +4,9 @@ AllCops:
   NewCops: enable
 RSpec/NestedGroups:
   Max: 5
+RSpec/MessageSpies:
+  Enabled: false
+RSpec/ExampleLength:
+  Enabled: false
+RSpec/AnyInstance:
+  Enabled: false

@@ -31,26 +31,26 @@ RSpec.describe WeaviateRecord::Queries::Offset do
       expect(instance.offset(1)).to be(instance)
     end
 
-    # context 'On queries' do
-    #   let!(:documents) do
-    #     10.times.map do |index|
-    #       DocumentTest.create(title: "test document #{index}")
-    #     end
-    #   end
-    #   after { documents.each(&:destroy) }
+    context 'with queries' do
+      let!(:articles) do
+        10.times.map do |index|
+          Article.create(title: "test article #{index}")
+        end
+      end
 
-    #   context 'when the given offset is less than total record' do
-    #     it 'skips the specified number of records' do
-    #       expect(DocumentTest.offset(2).order(:title).first.title).to eq('test document 2')
-    #       expect(DocumentTest.offset(5).order(:title).first.title).to eq('test document 5')
-    #     end
-    #   end
+      after { articles.each(&:destroy) }
 
-    #   context 'when the given offset is greater than total record' do
-    #     it 'return empty array' do
-    #       expect(DocumentTest.offset(15).all).to be_empty
-    #     end
-    #   end
-    # end
+      context 'when the given offset is less than total record' do
+        it 'skips the specified number of records' do
+          expect(Article.offset(2).order(:title).first.title).to eq('test article 2')
+        end
+      end
+
+      context 'when the given offset is greater than total record' do
+        it 'return empty array' do
+          expect(Article.offset(15).all).to be_empty
+        end
+      end
+    end
   end
 end

@@ -3,13 +3,15 @@
 require 'spec_helper'
 
 RSpec.describe WeaviateRecord::Connection do
-  describe '#create_client' do
+  let(:instance) { described_class.new }
+
+  describe '#client' do
     it 'returns Weavaite::Client object' do
-      expect(described_class.create_client).to be_an_instance_of(Weaviate::Client)
+      expect(instance.client).to be_an_instance_of(Weaviate::Client)
     end
 
     it 'connects with weaviate database' do
-      expect(described_class.create_client.url).to eq(ENV.fetch('WEAVIATE_DATABASE_URL', nil))
+      expect(instance.client.url).to eq(ENV.fetch('WEAVIATE_DATABASE_URL', nil))
     end
   end
 end

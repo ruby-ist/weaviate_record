@@ -6,13 +6,9 @@ module WeaviateRecord
     extend ActiveModel::Naming
     include ActiveModel::Conversion
     include ActiveModel::Validations
-    include Weaviate::Helpers::RecordHelpers
-    include Weaviate::Record::AttributeHandlers
-    include WeaviateRecord::Inspect
-    include WeaviateRecord::MethodMissing
-    include Weaviate::Record::QueryHandlers
-    attr_reader :additional, :attributes, :queried_record
-    private :additional, :attributes, :queried_record
+    include Inspect
+    include MethodMissing
+    include Concerns::RecordConcern
 
     class << self
       extend Forwardable
@@ -25,38 +21,43 @@ module WeaviateRecord
       end
 
       def find(id)
-        result = find_call(id)
+        result = Connection.new.find_call(id)
         if result.is_a?(Hash) && result['id']
-          new(_additional: additional_attributes(result), **result['properties'])
+          new(_additional: meta_attributes(result), **result['properties'])
         elsif result == ''
-          raise Weaviate::Errors::RecordNotFoundError, "Couldn't find Document with id=#{id}"
+          raise WeaviateRecord::Errors::RecordNotFoundError, "Couldn't find Document with id=#{id}"
         else
-          raise Weaviate::Errors::ServerError, result['message']
+          raise WeaviateRecord::Errors::ServerError, result['message']
         end
       end
 
       def count
-        client = Weaviate::Connection.create_client
+        client = Connection.new.client
         result = client.query.aggs(class_name: to_s, fields: 'meta { count }')
         result.dig(0, 'meta', 'count')
       rescue StandardError
-        raise Weaviate::Errors::ServerError, "unable to get the count for #{self} collection."
+        raise WeaviateRecord::Errors::ServerError, "unable to get the count for #{self} collection."
       end
 
       private
 
       def relation
-        Weaviate::Relation.new(to_s)
+        WeaviateRecord::Relation.new(self)
+      end
+
+      def inherited(klass)
+        super
+        WeaviateRecord::Schema.find_collection(klass)
       end
     end
 
-    def initialize(hash = {}, queried: false, **attributes)
+    def initialize(hash = {}, custom_selected: false, **attributes)
       attributes_hash = (hash.present? ? hash : attributes).deep_transform_keys(&:to_s)
-      @client = Weaviate::Connection.create_client
-      @queried_record = queried
+      @connection = WeaviateRecord::Connection.new(collection_name)
+      @custom_selected = custom_selected
       @attributes = {}
-      @additional = attributes_hash['_additional'] || { 'id' => nil, 'creationTimeUnix' => nil,
-                                                        'lastUpdateTimeUnix' => nil }
+      @meta_attributes = attributes_hash['_additional'] || { 'id' => nil, 'creationTimeUnix' => nil,
+                                                             'lastUpdateTimeUnix' => nil }
       run_attribute_handlers(attributes_hash)
     end
 
@@ -68,19 +69,19 @@ module WeaviateRecord
         errors.add(:base, message: result['error'])
         false
       else
-        @additional.merge!(self.class.additional_attributes(result))
+        @meta_attributes.merge!(self.class.meta_attributes(result))
         true
       end
     end
 
     def update(hash = {}, **attributes)
       attributes_hash = (hash.present? ? hash : attributes).deep_transform_keys(&:to_s)
-      update_validation_check(attributes_hash)
+      validate_record_for_update(attributes_hash)
       merge_attributes(attributes_hash)
       return false unless valid?
 
-      result = update_call(@additional['id'], @attributes)
-      raise Weaviate::Errors::ServerError, 'unable to update the weaviate record' unless result.is_a?(Hash)
+      result = @connection.update_call(@meta_attributes['id'], @attributes)
+      raise WeaviateRecord::Errors::ServerError, 'unable to update the weaviate record' unless result.is_a?(Hash)
 
       errors.add(:base, message: result['error']) if result['error'].present?
       result['id'].present?
@@ -89,7 +90,7 @@ module WeaviateRecord
     def destroy
       return self unless validate_record_for_destroy
 
-      result = delete_call(@additional['id'])
+      result = @connection.delete_call(@meta_attributes['id'])
       return freeze if result == true
 
       errors.add(:base, message: result['error']) if result['error'].present?
@@ -97,11 +98,16 @@ module WeaviateRecord
     end
 
     def persisted?
-      if @queried_record || !respond_to?(:id)
-        raise Weaviate::Errors::CustomQueriedRecordError, 'cannot perform persisted? action on custom queried record'
+      if @custom_selected || !respond_to?(:id)
+        raise WeaviateRecord::Errors::CustomQueriedRecordError,
+              'cannot perform persisted? action on custom queried record'
       end
 
       id.present?
     end
+
+    private
+
+    attr_reader :meta_attributes, :attributes, :custom_selected, :connection
   end
 end

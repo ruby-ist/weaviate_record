@@ -9,7 +9,7 @@ module WeaviateRecord
         # :limit and :offset does not work with aggregation queries too
         query = to_query.slice(:class_name, :near_text, :where)
         query[:fields] = 'meta { count }'
-        WeaviateRecord::Connection.create_client.query.aggs(**query).dig(0, 'meta', 'count')
+        @connection.client.query.aggs(**query).dig(0, 'meta', 'count')
       end
     end
   end

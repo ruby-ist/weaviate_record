@@ -5,26 +5,26 @@ module WeaviateRecord
   class Relation
     extend Forwardable
     include Enumerable
-    include WeaviateRecord::Helpers::SchemaHelpers
-    include WeaviateRecord::Queries::Bm25
-    include WeaviateRecord::Queries::Count
-    include WeaviateRecord::Queries::Limit
-    include WeaviateRecord::Queries::NearText
-    include WeaviateRecord::Queries::Offset
-    include WeaviateRecord::Queries::Order
-    include WeaviateRecord::Queries::Select
-    include WeaviateRecord::Queries::Where
+    include Queries::Bm25
+    include Queries::Count
+    include Queries::Limit
+    include Queries::NearText
+    include Queries::Offset
+    include Queries::Order
+    include Queries::Select
+    include Queries::Where
 
-    def_delegators(:records, :empty?, :present?, :all)
+    def_delegators(:records, :empty?, :present?)
 
     def initialize(klass)
       @select_options = { attributes: [], nested_attributes: {} }
-      @near_text_options = { concepts: [], distance: DEFAULT_DISTANCE }
-      @limit = ENV['WEAVIATE_DEFAULT_LIMIT'] || 25
+      @near_text_options = { concepts: [], distance: WeaviateRecord.config.near_text_default_distance }
+      @limit = ENV['QUERY_DEFAULTS_LIMIT'] || 25
       @offset = 0
       @klass = klass
       @records = []
       @loaded = false
+      @connection ||= WeaviateRecord::Connection.new
     end
 
     def each(&block)
@@ -57,11 +57,12 @@ module WeaviateRecord
       return @records if @loaded
 
       query = to_query
-      custom_selection = query[:fields].present?
-      query[:fields] = create_or_process_select_attributes(custom_selection, query[:fields])
-      result = WeaviateRecord::Connection.new.query.get(**query)
+      custom_selected = query[:fields].present?
+      query[:fields] = create_or_process_select_attributes(custom_selected, query[:fields])
+      result = @connection.client.query.get(**query)
       @loaded = true
-      @records = result.map { |record| @klass.new(queried: custom_selection, **record) }
+      @records = result.map { |record| @klass.new(custom_selected: custom_selected, **record) }
+      @records
     end
   end
 end

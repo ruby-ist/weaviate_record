@@ -5,21 +5,14 @@ require 'fileutils'
 
 RSpec.describe WeaviateRecord::Schema do
   describe '.all_collection' do
-    # context 'when a class is present in the schema' do
-    #   it 'returns the schema details of a class' do
-    #     expect(instance.send(:schema_details, 'DocumentTest').keys).to match_array(%i[class
-    #                                                                                   description
-    #                                                                                   invertedIndexConfig
-    #                                                                                   moduleConfig
-    #                                                                                   multiTenancyConfig
-    #                                                                                   properties
-    #                                                                                   replicationConfig
-    #                                                                                   shardingConfig
-    #                                                                                   vectorIndexConfig
-    #                                                                                   vectorIndexType
-    #                                                                                   vectorizer])
-    #   end
-    # end
+    context 'when a class is present in the schema' do
+      it 'returns the schema details of a class' do
+        expect(described_class.find_collection('Article').schema.keys)
+          .to match_array(%i[class description invertedIndexConfig moduleConfig multiTenancyConfig
+                             properties replicationConfig shardingConfig vectorIndexConfig
+                             vectorIndexType vectorizer])
+      end
+    end
 
     context 'when a class is not present in the schema' do
       it 'raises CollectionNotFound error' do
@@ -44,7 +37,7 @@ RSpec.describe WeaviateRecord::Schema do
       allow(File).to receive(:write)
     end
 
-    let(:schema) { WeaviateRecord::Connection.create_client.schema.list.deep_symbolize_keys! }
+    let(:schema) { WeaviateRecord::Connection.new.client.schema.list.deep_symbolize_keys! }
 
     it 'writes the db/weaviate/schema.rb file' do
       described_class.update!
@@ -57,7 +50,7 @@ RSpec.describe WeaviateRecord::Schema do
     it 'updates the Weaviate Structure' do
       described_class.update!
       current_schema = described_class.all_collections
-      weaviate_schema = WeaviateRecord::Connection.create_client.schema.list.deep_symbolize_keys!
+      weaviate_schema = WeaviateRecord::Connection.new.client.schema.list.deep_symbolize_keys!
       expect(current_schema).to eq(weaviate_schema)
     end
   end

@@ -41,20 +41,20 @@ RSpec.describe WeaviateRecord::Queries::Bm25 do
       expect(instance.bm25('test')).to eq(instance)
     end
 
-    # context 'On queries' do
-    #   let!(:documents) do
-    #     [
-    #       DocumentTest.create(content: 'Social security number is needed'),
-    #       DocumentTest.create(content: 'Social awareness programme'),
-    #       DocumentTest.create(content: 'Sherlock is a not a social person')
-    #     ]
-    #   end
-    #   after { documents.each(&:destroy) }
+    context 'with queries' do
+      let!(:articles) do
+        [
+          Article.create(content: 'Social security number is needed'),
+          Article.create(content: 'Social awareness programme'),
+          Article.create(content: 'Sherlock is a not a social person')
+        ]
+      end
 
-    #   it 'returns the documents matching the keyword' do
-    #     expect(DocumentTest.bm25('social').map(&:id)).to match_array(documents.map(&:id))
-    #     expect(DocumentTest.bm25('security number').map(&:id).first).to eq(documents[0].id)
-    #   end
-    # end
+      after { articles.each(&:destroy) }
+
+      it 'returns the articles matching the keyword' do
+        expect(Article.bm25('security number').map(&:id).first).to eq(articles[0].id)
+      end
+    end
   end
 end

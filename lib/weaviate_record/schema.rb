@@ -29,8 +29,7 @@ module WeaviateRecord
         load WeaviateRecord.config.schema_file_path
         collection_schema = all_collections[:classes].find { |collection| collection[:class] == klass.to_s }
         if collection_schema.nil?
-          raise WeaviateRecord::Errors::CollectionNotFound,
-                "Collection #{klass} not found in the schema"
+          raise WeaviateRecord::Errors::CollectionNotFound, "Collection #{klass} not found in the schema"
         end
 
         new(collection_schema)
@@ -39,7 +38,7 @@ module WeaviateRecord
       private
 
       def pretty_schema
-        WeaviateRecord::Connection.create_client.schema.list
+        WeaviateRecord::Connection.new.client.schema.list
                                   .deep_symbolize_keys!
                                   .pretty_inspect
       end
@@ -64,5 +63,6 @@ module WeaviateRecord
     end
 
     private_class_method :new
+    attr_reader :schema
   end
 end

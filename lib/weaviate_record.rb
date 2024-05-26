@@ -2,6 +2,8 @@
 
 require 'zeitwerk'
 require 'dotenv'
+require 'fileutils'
+require 'active_model'
 require 'active_support'
 require 'active_support/core_ext/hash/keys'
 require 'active_support/core_ext/object/blank'

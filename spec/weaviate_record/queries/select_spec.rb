@@ -64,24 +64,23 @@ RSpec.describe WeaviateRecord::Queries::Select do
       end
     end
 
-    # context 'on queries' do
-    #   let!(:documents) do
-    #     [DocumentTest.create(type: 'test', content: 'This is a test', title: 'test document')]
-    #   end
-    #   after { documents.each(&:destroy) }
+    context 'with queries' do
+      let!(:articles) do
+        [Article.create(content: 'This is a test', title: 'test article')]
+      end
 
-    #   it 'only selects the specified attributes from collection' do
-    #     DocumentTest.select(:type, :content).each do |document|
-    #       expect { document.title }.to raise_error(Weaviate::Errors::MissingAttributeError)
-    #     end
-    #   end
+      after { articles.each(&:destroy) }
 
-    #   it 'can query _additional meta attributes' do
-    #     DocumentTest.select(_additional: %i[id distance updated_at]).each do |document|
-    #       expect(document).to respond_to(:id, :distance, :updated_at)
-    #     end
-    #   end
-    # end
+      it 'only selects the specified attributes from collection' do
+        Article.select(:title, :content).each do |article|
+          expect { article.author }.to raise_error(WeaviateRecord::Errors::MissingAttributeError)
+        end
+      end
+
+      it 'can query _additional meta attributes' do
+        expect(Article.select(_additional: %i[id distance updated_at])).to all(respond_to(:id, :distance, :updated_at))
+      end
+    end
   end
 
   describe '#combined_select_attributes' do
@@ -127,10 +126,10 @@ RSpec.describe WeaviateRecord::Queries::Select do
 
     context 'when custom is false' do
       before do
-        instance.instance_variable_set(:@klass, 'Document')
-        document_schema = WeaviateRecord::Schema.send(:new, {})
-        allow(WeaviateRecord::Schema).to receive(:find_collection).with('Document').and_return(document_schema)
-        allow(document_schema).to receive(:attributes_list).and_return(%w[type content title])
+        instance.instance_variable_set(:@klass, 'article')
+        article_schema = WeaviateRecord::Schema.send(:new, {})
+        allow(WeaviateRecord::Schema).to receive(:find_collection).with('article').and_return(article_schema)
+        allow(article_schema).to receive(:attributes_list).and_return(%w[type content title])
       end
 
       it 'returns properties list joined with _additional' do

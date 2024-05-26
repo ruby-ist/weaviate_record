@@ -26,34 +26,34 @@ RSpec.describe WeaviateRecord::Queries::Where do
 
     it 'raises an error when the number of arguments does not match the number of placeholders' do
       expect do
-        instance.where('type = ?', 'articles', 'test')
+        instance.where('author = ?', 'nobody', 'test')
       end.to raise_error(WeaviateRecord::Errors::InvalidWhereQueryError, 'invalid number of arguments')
     end
 
     it 'sets loaded to false' do
-      instance.where('type = ?', 'test')
+      instance.where('title = ?', 'test')
       expect(instance.instance_variable_get(:@loaded)).to be_falsey
     end
 
     it 'returns self' do
-      expect(instance.where('type = ?', 'test')).to eq(instance)
+      expect(instance.where('title = ?', 'test')).to eq(instance)
     end
 
     it 'calls process_keyword_conditions' do
-      instance.where(type: 'test')
-      expect(instance).to have_received(:process_keyword_conditions).with({ type: 'test' })
+      instance.where(title: 'test')
+      expect(instance).to have_received(:process_keyword_conditions).with({ title: 'test' })
     end
 
     it 'calls process_string_conditions' do
-      instance.where('type = ?', 'test')
-      expect(instance).to have_received(:process_string_conditions).with('type = ?', 'test')
+      instance.where('title = ?', 'test')
+      expect(instance).to have_received(:process_string_conditions).with('title = ?', 'test')
     end
 
     it 'calls combine_queries' do
-      instance.where('type = ?', 'article', title: 'test')
+      instance.where('content = ?', 'article', title: 'test')
       expect(instance).to have_received(:combine_queries).with(
         '{ path: ["title"], operator: Equal, valueText: "test" }',
-        '{ path: ["type"], operator: Equal, valueText: "article" }'
+        '{ path: ["content"], operator: Equal, valueText: "article" }'
       )
     end
 
@@ -63,7 +63,7 @@ RSpec.describe WeaviateRecord::Queries::Where do
       end
 
       it 'sets where_query to the combined query' do
-        instance.where('type = ?', 'article', title: 'test')
+        instance.where('content = ?', 'article', title: 'test')
         expect(instance.instance_variable_get(:@where_query)).not_to be_nil
       end
     end
@@ -74,47 +74,42 @@ RSpec.describe WeaviateRecord::Queries::Where do
       end
 
       it 'calls create_logical_condition with existing where_query and new query' do
-        instance.instance_variable_set(:@where_query, '{ path: ["type"], operator: Equal, valueText: "article" }')
+        instance.instance_variable_set(:@where_query, '{ path: ["content"], operator: Equal, valueText: "article" }')
         instance.where(title: 'test')
         expect(instance).to have_received(:create_logical_condition)
       end
     end
 
-    # context 'On Queries' do
-    #   let!(:documents) do
-    #     6.times.map do |index|
-    #       DocumentTest.create(title: "Document #{index}", type: "type #{index & 1}")
-    #     end
-    #   end
-    #   after { documents.each(&:destroy) }
+    context 'with Queries' do
+      let!(:articles) do
+        6.times.map do |index|
+          Article.create(title: "article #{index}", author: "author #{index & 1}")
+        end
+      end
 
-    #   it 'can take conditions as string' do
-    #     expect(DocumentTest.where('title = ?', 'Document 1').first.id).to eq(documents[1].id)
-    #   end
+      after { articles.each(&:destroy) }
 
-    #   it 'can take conditions with keyword' do
-    #     expect(DocumentTest.where(title: 'Document 2').first.id).to eq(documents[2].id)
-    #   end
+      it 'can take conditions as string' do
+        expect(Article.where('title = ?', 'article 1').first.id).to eq(articles[1].id)
+      end
 
-    #   it 'can take multiple conditions' do
-    #     expect(DocumentTest.where('type = ? AND title LIKE ?', 'type 1', 'Document 1').first.id)
-    # .to eq(documents[1].id)
-    #     expect(DocumentTest.where('type = ? OR title LIKE ?', 'type 0', 'Document 1').count).to be(4)
-    #     expect(DocumentTest.where(type: 'type 1', title: 'Document 1').first.id).to eq(documents[1].id)
-    #     expect(DocumentTest.where(type: 'type 0', title: 'Document 1')).to be_empty
-    #   end
+      it 'can take conditions with keyword' do
+        expect(Article.where(title: 'article 2').first.id).to eq(articles[2].id)
+      end
 
-    #   it 'can take chained conditions' do
-    #     expect(DocumentTest.where(type: 'type 1').where('title LIKE ?', 'Document 1').first.id)
-    # .to eq(documents[1].id)
-    #     expect(DocumentTest.where(type: 'type 0').where('title LIKE ?', 'Document 1')).to be_empty
-    #   end
+      it 'can take multiple conditions' do
+        expect(Article.where('author = ? OR title LIKE ?', 'author 0', 'article 1').count).to be(4)
+      end
 
-    #   it 'can take conditions with meta attributes' do
-    #     expect(DocumentTest.where('created_at > ?', 1.day.ago).count).to eq(6)
-    #     expect(DocumentTest.where('updated_at > ?', 1.day.after).count).to eq(0)
-    #   end
-    # end
+      it 'can take chained conditions' do
+        expect(Article.where(author: 'author 1').where('title LIKE ?', 'article 1').first.id)
+          .to eq(articles[1].id)
+      end
+
+      it 'can take conditions with meta attributes' do
+        expect(Article.where('created_at > ?', Date.yesterday).count).to eq(6)
+      end
+    end
   end
 
   describe '#process_keyword_conditions' do
@@ -126,14 +121,14 @@ RSpec.describe WeaviateRecord::Queries::Where do
 
     context 'when hash is not empty' do
       it 'calls #create_query_condition for each key-value pair with = operator' do
-        instance.send(:process_keyword_conditions, type: 'article', title: 'test')
-        [%w[type = article], %w[title = test]].each do |equation|
+        instance.send(:process_keyword_conditions, content: 'article', title: 'test')
+        [%w[content = article], %w[title = test]].each do |equation|
           expect(instance).to have_received(:create_query_condition).with(equation)
         end
       end
 
       it 'combines conditions with logical AND operator' do
-        kw_args = { type: 'article', title: 'test', content: 'this is test' }
+        kw_args = { title: 'test', content: 'this is test' }
         instance.send(:process_keyword_conditions, **kw_args)
         expect(instance).to have_received(:create_logical_condition).with(any_args).exactly(kw_args.size - 1).times
       end
@@ -150,31 +145,31 @@ RSpec.describe WeaviateRecord::Queries::Where do
     context 'when query is not empty' do
       context 'when query does not contain logical operators' do
         it 'returns formatted where condition' do
-          expect(instance.send(:process_string_conditions, 'type = ?', 'test'))
-            .to eq('{ path: ["type"], operator: Equal, valueText: "test" }')
+          expect(instance.send(:process_string_conditions, 'title = ?', 'test'))
+            .to eq('{ path: ["title"], operator: Equal, valueText: "test" }')
         end
       end
 
       context 'when query contains logical operators' do
         it 'returns formatted logical where condition' do
-          expect(instance.send(:process_string_conditions, 'type = ? AND title = ?', 'test', 'title'))
+          expect(instance.send(:process_string_conditions, 'content = ? AND title = ?', 'test', 'title'))
             .to eq('{ operator: And, operands: [' \
-                   '{ path: ["type"], operator: Equal, valueText: "test" }, ' \
+                   '{ path: ["content"], operator: Equal, valueText: "test" }, ' \
                    '{ path: ["title"], operator: Equal, valueText: "title" }] }')
         end
 
         it 'calls itself with post_match' do
-          allow(instance).to receive(:process_string_conditions).with('type = ? AND title = ?',
+          allow(instance).to receive(:process_string_conditions).with('content = ? AND title = ?',
                                                                       'test', 'title').and_call_original
-          instance.send(:process_string_conditions, 'type = ? AND title = ?', 'test', 'title')
+          instance.send(:process_string_conditions, 'content = ? AND title = ?', 'test', 'title')
           expect(instance).to have_received(:process_string_conditions).with('title = ?', 'title')
         end
 
         context 'when logical operator is OR' do
           it 'combines conditions with logical operator in the query' do
-            pre_condition = instance.send(:create_query_condition_from_string, 'type = ?', ['test'])
+            pre_condition = instance.send(:create_query_condition_from_string, 'content = ?', ['test'])
             post_condition = instance.send(:create_query_condition_from_string, 'title = ?', ['title'])
-            instance.send(:process_string_conditions, 'type = ? OR title = ?', 'test', 'title')
+            instance.send(:process_string_conditions, 'content = ? OR title = ?', 'test', 'title')
             expect(instance).to have_received(:create_logical_condition).with(pre_condition, 'OR',
                                                                               post_condition)
           end
@@ -182,9 +177,9 @@ RSpec.describe WeaviateRecord::Queries::Where do
 
         context 'when logical operator is AND' do
           it 'combines conditions with logical operator in the query' do
-            pre_condition = instance.send(:create_query_condition_from_string, 'type = ?', ['test'])
+            pre_condition = instance.send(:create_query_condition_from_string, 'content = ?', ['test'])
             post_condition = instance.send(:create_query_condition_from_string, 'title = ?', ['title'])
-            instance.send(:process_string_conditions, 'type = ? AND title = ?', 'test', 'title')
+            instance.send(:process_string_conditions, 'content = ? AND title = ?', 'test', 'title')
             expect(instance).to have_received(:create_logical_condition).with(pre_condition, 'AND',
                                                                               post_condition)
           end
@@ -197,7 +192,7 @@ RSpec.describe WeaviateRecord::Queries::Where do
     context 'when equation size is not 3' do
       it 'raises an error' do
         expect do
-          instance.send(:create_query_condition_from_string, 'type =', ['article'])
+          instance.send(:create_query_condition_from_string, 'content =', ['article'])
         end.to raise_error(WeaviateRecord::Errors::InvalidWhereQueryError, 'unable to process the query')
       end
     end
@@ -205,25 +200,25 @@ RSpec.describe WeaviateRecord::Queries::Where do
     context 'when values are empty' do
       it 'raises an error' do
         expect do
-          instance.send(:create_query_condition_from_string, 'type = ?', [])
+          instance.send(:create_query_condition_from_string, 'content = ?', [])
         end.to raise_error(WeaviateRecord::Errors::InvalidWhereQueryError, 'insufficient values for formatting')
       end
     end
 
     it 'returns a formatted condition' do
-      expect(instance.send(:create_query_condition_from_string, 'type = ?',
-                           ['article'])).to eq('{ path: ["type"], operator: Equal, valueText: "article" }')
+      expect(instance.send(:create_query_condition_from_string, 'content = ?',
+                           ['article'])).to eq('{ path: ["content"], operator: Equal, valueText: "article" }')
     end
 
     it 'removes the first value from the array' do
       values = %w[article test]
-      instance.send(:create_query_condition_from_string, 'type = ?', values)
+      instance.send(:create_query_condition_from_string, 'content = ?', values)
       expect(values).to eq(['test'])
     end
 
     it 'calls #create_query_condition with condition as an array' do
-      instance.send(:create_query_condition_from_string, 'type = ?', ['article'])
-      expect(instance).to have_received(:create_query_condition).with(%w[type = article])
+      instance.send(:create_query_condition_from_string, 'content = ?', ['article'])
+      expect(instance).to have_received(:create_query_condition).with(%w[content = article])
     end
   end
 
@@ -247,8 +242,8 @@ RSpec.describe WeaviateRecord::Queries::Where do
   describe '#create_query_condition' do
     context 'when value is nil' do
       it 'calls #null_condition with attribute' do
-        instance.send(:create_query_condition, %w[type =])
-        expect(instance).to have_received(:null_condition).with('type')
+        instance.send(:create_query_condition, %w[content =])
+        expect(instance).to have_received(:null_condition).with('content')
       end
     end
 
@@ -264,13 +259,13 @@ RSpec.describe WeaviateRecord::Queries::Where do
       end
 
       it 'calls #map_value_type with value' do
-        instance.send(:create_query_condition, %w[type = articles])
+        instance.send(:create_query_condition, %w[content = articles])
         expect(instance).to have_received(:map_value_type).with('articles')
       end
 
       it 'returns a formatted condition' do
         expect(instance.send(:create_query_condition,
-                             %w[type = article])).to eq('{ path: ["type"], operator: Equal, valueText: "article" }')
+                             %w[content = article])).to eq('{ path: ["content"], operator: Equal, valueText: "article" }')
       end
     end
   end
@@ -278,7 +273,7 @@ RSpec.describe WeaviateRecord::Queries::Where do
   describe '#handle_timestamps_condition' do
     context 'when attribute is not created_at or updated_at' do
       it 'returns nil' do
-        expect(instance.send(:handle_timestamps_condition, %w[type = article])).to be_nil
+        expect(instance.send(:handle_timestamps_condition, %w[content = article])).to be_nil
       end
     end
 
@@ -309,7 +304,7 @@ RSpec.describe WeaviateRecord::Queries::Where do
 
   describe '#null_condition' do
     it 'returns a null condition for attribute' do
-      expect(instance.send(:null_condition, 'type')).to eq('{ path: ["type"], operator: IsNull, valueBoolean: true }')
+      expect(instance.send(:null_condition, 'content')).to eq('{ path: ["content"], operator: IsNull, valueBoolean: true }')
     end
   end
 
