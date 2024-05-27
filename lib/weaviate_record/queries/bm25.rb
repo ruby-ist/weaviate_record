@@ -8,14 +8,10 @@ module WeaviateRecord
       def bm25(text)
         raise TypeError, 'text must be a string' unless text.is_a?(String)
 
-        self.keyword_search = text if text.present?
-        self.loaded = false
+        @keyword_search = text if text.present?
+        @loaded = false
         self
       end
-
-      private
-
-      attr_writer :keyword_search
     end
   end
 end

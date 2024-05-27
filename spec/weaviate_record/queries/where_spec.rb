@@ -6,7 +6,6 @@ RSpec.describe WeaviateRecord::Queries::Where do
   let(:klass) do
     Class.new do
       include WeaviateRecord::Queries::Where
-      attr_writer :loaded
     end
   end
   let(:instance) { klass.new }
@@ -265,7 +264,9 @@ RSpec.describe WeaviateRecord::Queries::Where do
 
       it 'returns a formatted condition' do
         expect(instance.send(:create_query_condition,
-                             %w[content = article])).to eq('{ path: ["content"], operator: Equal, valueText: "article" }')
+                             %w[content
+                                =
+                                article])).to eq('{ path: ["content"], operator: Equal, valueText: "article" }')
       end
     end
   end
@@ -304,7 +305,8 @@ RSpec.describe WeaviateRecord::Queries::Where do
 
   describe '#null_condition' do
     it 'returns a null condition for attribute' do
-      expect(instance.send(:null_condition, 'content')).to eq('{ path: ["content"], operator: IsNull, valueBoolean: true }')
+      expect(instance.send(:null_condition,
+                           'content')).to eq('{ path: ["content"], operator: IsNull, valueBoolean: true }')
     end
   end
 

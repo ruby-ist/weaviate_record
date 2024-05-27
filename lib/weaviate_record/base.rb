@@ -25,7 +25,7 @@ module WeaviateRecord
         if result.is_a?(Hash) && result['id']
           new(_additional: meta_attributes(result), **result['properties'])
         elsif result == ''
-          raise WeaviateRecord::Errors::RecordNotFoundError, "Couldn't find Document with id=#{id}"
+          raise WeaviateRecord::Errors::RecordNotFoundError, "Couldn't find record with id=#{id}"
         else
           raise WeaviateRecord::Errors::ServerError, result['message']
         end
@@ -105,9 +105,5 @@ module WeaviateRecord
 
       id.present?
     end
-
-    private
-
-    attr_reader :meta_attributes, :attributes, :custom_selected, :connection
   end
 end

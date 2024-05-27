@@ -7,14 +7,10 @@ module WeaviateRecord
       def offset(offset_value)
         raise TypeError, 'Offset should be an integer' unless offset_value.to_i.to_s == offset_value.to_s
 
-        self.offset = offset_value
-        self.loaded = false
+        @offset = offset_value
+        @loaded = false
         self
       end
-
-      private
-
-      attr_writer :offset
     end
   end
 end

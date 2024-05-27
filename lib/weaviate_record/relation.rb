@@ -24,7 +24,7 @@ module WeaviateRecord
       @klass = klass
       @records = []
       @loaded = false
-      @connection ||= WeaviateRecord::Connection.new
+      @connection = WeaviateRecord::Connection.new
     end
 
     def each(&block)
@@ -50,8 +50,6 @@ module WeaviateRecord
     end
 
     private
-
-    attr_writer :loaded
 
     def records
       return @records if @loaded

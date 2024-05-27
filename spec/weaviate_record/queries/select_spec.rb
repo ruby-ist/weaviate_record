@@ -6,7 +6,6 @@ RSpec.describe WeaviateRecord::Queries::Select do
   let(:klass) do
     Class.new do
       include WeaviateRecord::Queries::Select
-      attr_writer :loaded
     end
   end
   let(:instance) { klass.new }

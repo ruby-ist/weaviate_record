@@ -9,13 +9,11 @@ module WeaviateRecord
 
         sorting_specifiers = combine_arguments(args, kw_args)
         assign_sort_options(sorting_specifiers)
-        self.loaded = false
+        @loaded = false
         self
       end
 
       private
-
-      attr_accessor :sort_options
 
       def validate_attribute_and_order(attribute, sorting_order)
         unless attribute.is_a?(Symbol) || attribute.is_a?(String)
@@ -47,13 +45,13 @@ module WeaviateRecord
       end
 
       def assign_sort_options(sorting_specifiers)
-        self.sort_options = if sort_options.nil?
-                              merge_sorting_specifiers(*sorting_specifiers)
-                            elsif sort_options.start_with?('[')
-                              merge_sorting_specifiers(sort_options[2...-2], *sorting_specifiers)
-                            else
-                              merge_sorting_specifiers(sort_options, *sorting_specifiers)
-                            end
+        @sort_options = if @sort_options.nil?
+                          merge_sorting_specifiers(*sorting_specifiers)
+                        elsif @sort_options.start_with?('[')
+                          merge_sorting_specifiers(@sort_options[2...-2], *sorting_specifiers)
+                        else
+                          merge_sorting_specifiers(@sort_options, *sorting_specifiers)
+                        end
       end
 
       def merge_sorting_specifiers(*sorting_specifiers)

@@ -7,24 +7,22 @@ module WeaviateRecord
       def select(*args)
         args.each do |arg|
           if arg.is_a? Hash
-            select_options[:nested_attributes].merge! arg
+            @select_options[:nested_attributes].merge! arg
           else
-            select_options[:attributes] << arg.to_s unless select_options[:attributes].include?(arg.to_s)
+            @select_options[:attributes] << arg.to_s unless @select_options[:attributes].include?(arg.to_s)
           end
         end
-        self.loaded = false
+        @loaded = false
         self
       end
 
       private
 
-      attr_reader :select_options, :klass
-
       def combined_select_attributes
-        attributes = format_array_attribute(select_options[:attributes])
-        return attributes if select_options[:nested_attributes].empty?
+        attributes = format_array_attribute(@select_options[:attributes])
+        return attributes if @select_options[:nested_attributes].empty?
 
-        "#{attributes} #{format_nested_attribute(select_options[:nested_attributes])}"
+        "#{attributes} #{format_nested_attribute(@select_options[:nested_attributes])}"
       end
 
       def create_or_process_select_attributes(custom_selected, attributes)
@@ -33,7 +31,7 @@ module WeaviateRecord
                           WeaviateRecord::Constants::SPECIAL_ATTRIBUTE_MAPPINGS)
         else
           [
-            *WeaviateRecord::Schema.find_collection(klass).attributes_list,
+            *WeaviateRecord::Schema.find_collection(@klass).attributes_list,
             '_additional { id creationTimeUnix lastUpdateTimeUnix }'
           ].join(' ')
         end

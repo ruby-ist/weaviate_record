@@ -6,7 +6,6 @@ RSpec.describe WeaviateRecord::Queries::Offset do
   let(:klass) do
     Class.new do
       include WeaviateRecord::Queries::Offset
-      attr_writer :loaded
     end
   end
   let(:instance) { klass.new }
@@ -22,7 +21,7 @@ RSpec.describe WeaviateRecord::Queries::Offset do
     end
 
     it 'sets loaded to false' do
-      instance.loaded = true
+      instance.instance_variable_set(:@loaded, true)
       instance.offset(3)
       expect(instance.instance_variable_get(:@loaded)).to be_falsey
     end

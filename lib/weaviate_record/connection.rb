@@ -8,7 +8,7 @@ module WeaviateRecord
     attr_reader :client, :collection_name
 
     def initialize(collection_name = nil)
-      @collection_name = collection_name
+      @collection_name = collection_name.to_s
       @client = Weaviate::Client.new(
         url: ENV.fetch('WEAVIATE_DATABASE_URL'),
         api_key: ENV.fetch('WEAVIATE_API_KEY', nil),

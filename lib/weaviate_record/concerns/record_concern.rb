@@ -22,9 +22,9 @@ module WeaviateRecord
 
       def validate_record_for_update(attributes_hash)
         raise ArgumentError, 'update action requires minimum one attribute' if attributes_hash.empty?
-        raise WeaviateRecord::Errors::MissingIdError, 'the record doesn\'t have an id' unless meta_attributes['id']
+        raise WeaviateRecord::Errors::MissingIdError, 'the record doesn\'t have an id' unless @meta_attributes['id']
 
-        if custom_selected
+        if @custom_selected
           raise WeaviateRecord::Errors::CustomQueriedRecordError,
                 'cannot perform update action on custom selected record'
         end
@@ -36,7 +36,7 @@ module WeaviateRecord
       end
 
       def validate_and_save
-        if custom_selected
+        if @custom_selected
           raise WeaviateRecord::Errors::CustomQueriedRecordError, 'cannot modify custom selected record'
         end
         return false unless valid?
@@ -48,22 +48,22 @@ module WeaviateRecord
       end
 
       def create_or_update_record
-        if meta_attributes['id']
-          connection.update_call(meta_attributes['id'], attributes)
+        if @meta_attributes['id']
+          @connection.update_call(@meta_attributes['id'], @attributes)
         else
-          connection.create_call(attributes)
+          @connection.create_call(@attributes)
         end
       end
 
       def validate_record_for_destroy
-        if custom_selected
+        if @custom_selected
           raise WeaviateRecord::Errors::CustomQueriedRecordError,
                 'cannot perform destroy action on custom selected record'
         end
 
-        return true if meta_attributes['id']
+        return true if @meta_attributes['id']
 
-        attributes.each_key { |key| attributes[key] = nil }
+        @attributes.each_key { |key| @attributes[key] = nil }
         false
       end
 

@@ -23,55 +23,55 @@ module WeaviateRecord
         attributes_hash.deep_transform_keys!(&:to_s)
         check_attributes(attributes_hash)
         attributes_hash.each do |key, value|
-          attributes[key] = value
+          @attributes[key] = value
         end
       end
 
       def load_attributes(attributes_hash)
-        if attributes_hash.empty? || !custom_selected
+        if attributes_hash.empty? || !@custom_selected
           list_of_valid_attributes.each do |attribute|
-            attributes[attribute] = nil
+            @attributes[attribute] = nil
           end
         end
 
         attributes_hash.each do |key, value|
           next if key == '_additional'
 
-          attributes[key] = value
+          @attributes[key] = value
         end
       end
 
       def create_attribute_writers
         list_of_valid_attributes.each do |name|
           define_singleton_method("#{name}=") do |value|
-            attributes[name] = value
+            @attributes[name] = value
           end
         end
       end
 
       def create_attribute_readers
-        attributes_list = custom_selected ? attributes.each_key : list_of_valid_attributes
+        attributes_list = @custom_selected ? @attributes.each_key : list_of_valid_attributes
         attributes_list.each do |name|
-          define_singleton_method(name) { attributes[name] }
+          define_singleton_method(name) { @attributes[name] }
         end
 
         handle_timestamp_attributes
-        meta_attributes.each_key do |name|
-          define_singleton_method(name.underscore) { meta_attributes[name] }
+        @meta_attributes.each_key do |name|
+          define_singleton_method(name.underscore) { @meta_attributes[name] }
         end
       end
 
       def handle_timestamp_attributes
-        replace_timestamp_attribute('creationTimeUnix') if meta_attributes.key? 'creationTimeUnix'
-        replace_timestamp_attribute('lastUpdateTimeUnix') if meta_attributes.key? 'lastUpdateTimeUnix'
+        replace_timestamp_attribute('creationTimeUnix') if @meta_attributes.key? 'creationTimeUnix'
+        replace_timestamp_attribute('lastUpdateTimeUnix') if @meta_attributes.key? 'lastUpdateTimeUnix'
       end
 
       def replace_timestamp_attribute(attribute)
         mapped_attribute = WeaviateRecord::Constants::SPECIAL_ATTRIBUTE_MAPPINGS.key(attribute)
-        meta_attributes[mapped_attribute] = if meta_attributes[attribute]
-                                              DateTime.strptime(meta_attributes[attribute], '%Q')
-                                            end
-        meta_attributes.delete(attribute)
+        @meta_attributes[mapped_attribute] = if @meta_attributes[attribute]
+                                               DateTime.strptime(@meta_attributes[attribute], '%Q')
+                                             end
+        @meta_attributes.delete(attribute)
       end
     end
   end

@@ -6,7 +6,6 @@ RSpec.describe WeaviateRecord::Queries::NearText do
   let(:klass) do
     Class.new do
       include WeaviateRecord::Queries::NearText
-      attr_writer :loaded
     end
   end
   let(:instance) { klass.new }

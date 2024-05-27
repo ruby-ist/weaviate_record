@@ -8,8 +8,6 @@ describe WeaviateRecord::Inspect do
   let(:klass) do
     Class.new do
       include WeaviateRecord::Inspect
-
-      attr_reader :attributes, :meta_attributes
     end
   end
   let(:instance) { klass.new }

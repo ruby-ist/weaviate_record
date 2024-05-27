@@ -16,7 +16,7 @@ module WeaviateRecord
     private
 
     def format_attributes
-      attributes_list = { **meta_attributes, **attributes }
+      attributes_list = { **@meta_attributes, **@attributes }
       special_attributes = attributes_list.slice('id', 'created_at', 'updated_at')
       attributes_list.except!(*special_attributes.keys)
       inspection = attributes_list.sort.map do |key, value|

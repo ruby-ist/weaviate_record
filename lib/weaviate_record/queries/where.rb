@@ -9,14 +9,12 @@ module WeaviateRecord
         keyword_query = process_keyword_conditions(kw_args)
         string_query = process_string_conditions(query, *values)
         combined_query = combine_queries(keyword_query, string_query)
-        self.where_query = where_query ? create_logical_condition(where_query, 'And', combined_query) : combined_query
-        self.loaded = false
+        @where_query = @where_query ? create_logical_condition(@where_query, 'And', combined_query) : combined_query
+        @loaded = false
         self
       end
 
       private
-
-      attr_accessor :where_query
 
       def validate_arguments(query, values, kw_args)
         if values.empty? && kw_args.empty?
