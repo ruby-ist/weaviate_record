@@ -14,6 +14,15 @@ module WeaviateRecord
         self
       end
 
+      def self.to_ruby_hash(string_condition)
+        pattern = /(?<=\s)\w+:|(?<=operator:\s)\w+/
+        keys_and_operator = string_condition.scan(pattern).uniq
+        json_equivalent = keys_and_operator.map { |i| i.end_with?(':') ? "#{i[0...-1].inspect}:" : i.inspect }
+        JSON.parse string_condition.gsub(pattern, keys_and_operator.zip(json_equivalent).to_h)
+      rescue StandardError => e
+        raise WeaviateRecord::Errors::WhereQueryConversionError, e.message
+      end
+
       private
 
       def validate_arguments(query, values, kw_args)

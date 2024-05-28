@@ -62,5 +62,13 @@ module WeaviateRecord
     # Used for errors occurring during migrations
     class MigrationError < StandardError
     end
+
+    # Used when destroy_all called without where conditions
+    class MissingWhereCondition < StandardError
+    end
+
+    # Raised when where condition is not getting converted to Ruby hash
+    class WhereQueryConversionError < StandardError
+    end
   end
 end

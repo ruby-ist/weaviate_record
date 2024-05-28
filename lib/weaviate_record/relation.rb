@@ -24,7 +24,7 @@ module WeaviateRecord
       @klass = klass
       @records = []
       @loaded = false
-      @connection = WeaviateRecord::Connection.new
+      @connection = WeaviateRecord::Connection.new(@klass)
     end
 
     def each(&block)
@@ -33,6 +33,17 @@ module WeaviateRecord
 
     def inspect
       records
+    end
+
+    def destroy_all
+      unless @where_query
+        raise WeaviateRecord::Errors::MissingWhereCondition, 'must specifiy atleast one where condition'
+      end
+
+      response = @connection.delete_where(Queries::Where.to_ruby_hash(@where_query))
+      return response['results'] if response.is_a?(Hash) && response.key?('results')
+
+      raise WeaviateRecord::Errors::ServerError, result.dig('error', 'message').presence || 'Unauthorized'
     end
 
     alias all inspect

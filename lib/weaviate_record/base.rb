@@ -12,7 +12,7 @@ module WeaviateRecord
 
     class << self
       extend Forwardable
-      def_delegators(:relation, :all, :bm25, :limit, :near_text, :offset, :order, :select, :where)
+      def_delegators(:relation, :all, :bm25, :limit, :near_text, :offset, :order, :select, :where, :destroy_all)
 
       def create(**attributes_hash)
         record = new(**attributes_hash)
@@ -21,7 +21,7 @@ module WeaviateRecord
       end
 
       def find(id)
-        result = Connection.new.find_call(id)
+        result = connection.find_call(id)
         if result.is_a?(Hash) && result['id']
           new(_additional: meta_attributes(result), **result['properties'])
         elsif result == ''
@@ -32,14 +32,21 @@ module WeaviateRecord
       end
 
       def count
-        client = Connection.new.client
-        result = client.query.aggs(class_name: to_s, fields: 'meta { count }')
+        result = connection.client.query.aggs(class_name: to_s, fields: 'meta { count }')
         result.dig(0, 'meta', 'count')
       rescue StandardError
         raise WeaviateRecord::Errors::ServerError, "unable to get the count for #{self} collection."
       end
 
+      def exists?(id)
+        connection.check_existence(id)
+      end
+
       private
+
+      def connection
+        @connection ||= Connection.new(self)
+      end
 
       def relation
         WeaviateRecord::Relation.new(self)

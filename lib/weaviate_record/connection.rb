@@ -8,7 +8,7 @@ module WeaviateRecord
     attr_reader :client, :collection_name
 
     def initialize(collection_name = nil)
-      @collection_name = collection_name.to_s
+      @collection_name = collection_name&.to_s
       @client = Weaviate::Client.new(
         url: ENV.fetch('WEAVIATE_DATABASE_URL'),
         api_key: ENV.fetch('WEAVIATE_API_KEY', nil),
@@ -31,6 +31,14 @@ module WeaviateRecord
 
     def delete_call(id)
       client.objects.delete(class_name: collection_name, id: id)
+    end
+
+    def check_existence(id)
+      client.objects.exists?(class_name: collection_name, id: id)
+    end
+
+    def delete_where(condition)
+      client.objects.batch_delete(class_name: collection_name, where: condition)
     end
   end
 end
