@@ -55,14 +55,6 @@ module WeaviateRecord
     class ServerError < StandardError
     end
 
-    # Used when the schema is not in sync with the weaviate database
-    class SchemaSyncError < StandardError
-    end
-
-    # Used for errors occurring during migrations
-    class MigrationError < StandardError
-    end
-
     # Used when destroy_all called without where conditions
     class MissingWhereCondition < StandardError
     end
