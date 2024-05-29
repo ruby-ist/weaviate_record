@@ -13,7 +13,7 @@ RSpec.describe WeaviateRecord::Queries::NearText do
   before do
     instance.instance_variable_set(:@near_text_options, {
                                      concepts: [],
-                                     distance: WeaviateRecord.config.near_text_default_distance
+                                     distance: WeaviateRecord.config.similarity_search_threshold
                                    })
   end
 
@@ -41,7 +41,7 @@ RSpec.describe WeaviateRecord::Queries::NearText do
           instance.near_text('text')
           expect(instance
                    .instance_variable_get(:@near_text_options)[:distance])
-            .to eq(WeaviateRecord.config.near_text_default_distance)
+            .to eq(WeaviateRecord.config.similarity_search_threshold)
         end
       end
 

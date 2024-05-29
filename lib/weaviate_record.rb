@@ -4,9 +4,6 @@ require 'zeitwerk'
 require 'dotenv'
 require 'fileutils'
 require 'active_model'
-require 'active_support'
-require 'active_support/core_ext/hash/keys'
-require 'active_support/core_ext/object/blank'
 require 'active_support/core_ext/string/conversions'
 
 Dotenv.load
@@ -17,8 +14,12 @@ loader.setup
 module WeaviateRecord
   def self.config
     @config ||= Struct.new(
-      :near_text_default_distance,
+      :similarity_search_threshold,
       :schema_file_path
     ).new(0.55, "#{Object.const_defined?('Rails') ? Rails.root : Dir.pwd}/db/weaviate/schema.rb")
+
+    yield @config if block_given?
+
+    @config
   end
 end

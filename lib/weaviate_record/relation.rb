@@ -18,7 +18,7 @@ module WeaviateRecord
 
     def initialize(klass)
       @select_options = { attributes: [], nested_attributes: {} }
-      @near_text_options = { concepts: [], distance: WeaviateRecord.config.near_text_default_distance }
+      @near_text_options = { concepts: [], distance: WeaviateRecord.config.similarity_search_threshold }
       @limit = ENV['QUERY_DEFAULTS_LIMIT'] || 25
       @offset = 0
       @klass = klass

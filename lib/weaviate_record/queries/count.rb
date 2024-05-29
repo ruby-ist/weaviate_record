@@ -7,7 +7,7 @@ module WeaviateRecord
       def count
         # :bm25 is not included here because it is not supported in aggregation queries
         # :limit and :offset does not work with aggregation queries too
-        query = to_query.slice(:class_name, :near_text, :where)
+        query = to_query.slice(:class_name, :near_text, :near_vector, :near_object, :where, :after)
         query[:fields] = 'meta { count }'
         @connection.client.query.aggs(**query).dig(0, 'meta', 'count')
       end

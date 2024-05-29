@@ -21,7 +21,7 @@ RSpec.describe WeaviateRecord::Relation do
       expect(article.instance_variable_get(:@select_options)).to eq({ attributes: [], nested_attributes: {} })
       expect(article.instance_variable_get(:@near_text_options)).to eq({ concepts: [],
                                                                          distance: WeaviateRecord.config
-                                                                           .near_text_default_distance })
+                                                                           .similarity_search_threshold })
       expect(article.instance_variable_get(:@limit)).to eq(25)
       expect(article.instance_variable_get(:@offset)).to eq(0)
       expect(article.instance_variable_get(:@klass)).to eq('Article')
