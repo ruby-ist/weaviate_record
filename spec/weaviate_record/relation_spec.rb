@@ -60,10 +60,82 @@ RSpec.describe WeaviateRecord::Relation do
     end
   end
 
+  describe '#destory_all' do
+    let(:relation) { described_class.new(Article) }
+
+    context 'when called with out where condition' do
+      it 'raises error' do
+        expect do
+          relation.destroy_all
+        end.to raise_error(WeaviateRecord::Errors::MissingWhereCondition,
+                           'must specifiy atleast one where condition')
+      end
+    end
+
+    context 'when called with where condition' do
+      it 'calls #delete_where on connection' do
+        expect(relation.instance_variable_get(:@connection)).to receive(:delete_where).and_call_original
+        relation.where(title: 'fun').destroy_all
+      end
+
+      context 'when records deleted successfully' do
+        let(:result) { { 'results' => { 'success' => true } } }
+
+        before do
+          allow(relation.instance_variable_get(:@connection)).to receive(:delete_where).and_return(result)
+        end
+
+        it 'returns the batch deletion result' do
+          expect(relation.where(title: 'fun').destroy_all).to eq({ 'success' => true })
+        end
+      end
+
+      context 'when any error happens in request' do
+        let(:result) { { 'error' => { 'message' => 'Server Error' } } }
+
+        before do
+          allow(relation.instance_variable_get(:@connection)).to receive(:delete_where).and_return(result)
+        end
+
+        it 'raises custom error with error message' do
+          expect do
+            relation.where(title: 'fun').destroy_all
+          end.to raise_error(WeaviateRecord::Errors::ServerError, 'Server Error')
+        end
+      end
+
+      context 'when delete_where request returns empty string' do
+        let(:result) { '' }
+
+        before do
+          allow(relation.instance_variable_get(:@connection)).to receive(:delete_where).and_return(result)
+        end
+
+        it 'raises unauthorized error' do
+          expect do
+            relation.where(title: 'fun').destroy_all
+          end.to raise_error(WeaviateRecord::Errors::ServerError, 'Unauthorized')
+        end
+      end
+
+      it 'deletes the record' do
+        3.times do |index|
+          Article.create(title: 'fun', content: "lorem ipsum #{index}", categories: ['test'])
+        end
+        expect { relation.where(title: 'fun').destroy_all }.to change(Article, :count).by(-3)
+      end
+    end
+  end
+
   describe '#inspect' do
     let(:relation) { described_class.new(Article) }
 
-    describe '#records' do
+    it 'calls #records' do
+      expect(relation).to receive(:records).and_call_original
+      relation.inspect
+    end
+
+    context 'when called' do
       let!(:articles) do
         [
           Article.create(title: 'article', content: 'lorem ipsum 1', categories: ['test']),
@@ -76,6 +148,13 @@ RSpec.describe WeaviateRecord::Relation do
       it 'returns the records' do
         result = relation.inspect
         expect(result.map(&:id)).to match_array(articles.map(&:id))
+      end
+    end
+
+    context 'when #records throws error' do
+      it 'returns the error object' do
+        allow(relation).to receive(:records).and_raise(StandardError, 'Error while fetching records')
+        expect(relation.inspect.to_s).to eq(StandardError.new('Error while fetching records').to_s)
       end
     end
 

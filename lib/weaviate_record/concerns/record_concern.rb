@@ -5,7 +5,7 @@ module WeaviateRecord
     # Helper functions for WeaviateRecord class
     module RecordConcern
       extend ActiveSupport::Concern
-      include AttributeHandlers
+      include AttributeConcern
 
       def collection_name
         self.class.to_s

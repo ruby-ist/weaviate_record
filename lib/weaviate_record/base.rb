@@ -54,8 +54,8 @@ module WeaviateRecord
       end
 
       def inherited(klass)
-        super
         WeaviateRecord::Schema.find_collection(klass)
+        super
       end
     end
 

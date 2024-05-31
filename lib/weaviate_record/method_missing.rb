@@ -10,9 +10,8 @@ module WeaviateRecord
        *WeaviateRecord::Constants::META_ATTRIBUTES]
     end
 
-    def method_missing(name, *args, &block)
-      method = name.to_s
-      if list_of_all_attributes.include? method
+    def method_missing(method, *args, &block)
+      if list_of_all_attributes.include? method.to_s
         raise WeaviateRecord::Errors::MissingAttributeError, "missing attribute: #{method}"
       end
 
@@ -20,7 +19,7 @@ module WeaviateRecord
     end
 
     def respond_to_missing?(method, include_all = false)
-      list_of_all_attributes.include?(method) ? true : super
+      list_of_all_attributes.include?(method.to_s) ? true : super
     end
   end
 end

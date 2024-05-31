@@ -44,4 +44,18 @@ RSpec.describe WeaviateRecord::Connection do
       instance.find_call('123')
     end
   end
+
+  describe '#check_existence' do
+    it 'calls the exists? method on objects' do
+      expect(instance.client.objects).to receive(:exists?).with(class_name: 'Article', id: '123')
+      instance.check_existence('123')
+    end
+  end
+
+  describe '#delete_where' do
+    it 'calls the batch_delete method on objects' do
+      expect(instance.client.objects).to receive(:batch_delete).with(class_name: 'Article', where: { name: 'John' })
+      instance.delete_where({ name: 'John' })
+    end
+  end
 end

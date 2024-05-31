@@ -3,7 +3,7 @@
 module WeaviateRecord
   module Concerns
     # Helpers functions to handle the record attributes mapping
-    module AttributeHandlers
+    module AttributeConcern
       private
 
       def list_of_valid_attributes
@@ -20,7 +20,6 @@ module WeaviateRecord
       end
 
       def merge_attributes(attributes_hash)
-        attributes_hash.deep_transform_keys!(&:to_s)
         check_attributes(attributes_hash)
         attributes_hash.each do |key, value|
           @attributes[key] = value

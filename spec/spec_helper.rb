@@ -2,6 +2,8 @@
 
 require_relative '../lib/weaviate_record'
 require_relative 'models/article'
-# require 'simplecov'
+require 'dotenv'
+require 'simplecov'
 
-# SimpleCov.start
+Dotenv.load
+SimpleCov.start

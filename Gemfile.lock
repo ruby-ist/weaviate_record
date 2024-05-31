@@ -19,6 +19,7 @@ GEM
     concurrent-ruby (1.2.3)
     connection_pool (2.4.1)
     diff-lcs (1.5.1)
+    docile (1.4.0)
     dotenv (3.1.2)
     drb (2.2.1)
     faraday (2.9.0)
@@ -88,6 +89,12 @@ GEM
     rubocop-rspec_rails (2.28.3)
       rubocop (~> 1.40)
     ruby-progressbar (1.13.0)
+    simplecov (0.22.0)
+      docile (~> 1.1)
+      simplecov-html (~> 0.11)
+      simplecov_json_formatter (~> 0.1)
+    simplecov-html (0.12.3)
+    simplecov_json_formatter (0.1.4)
     strscan (3.1.0)
     tzinfo (2.0.6)
       concurrent-ruby (~> 1.0)
@@ -107,6 +114,7 @@ DEPENDENCIES
   rspec
   rubocop
   rubocop-rspec
+  simplecov
   weaviate-ruby (~> 0.8.10)
   zeitwerk
 

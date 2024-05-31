@@ -12,15 +12,15 @@ RSpec.describe WeaviateRecord::Queries::Bm25 do
 
   describe '#bm25' do
     context 'when text is not a string' do
-      it 'raises a TypeError' do
-        expect { instance.bm25(1) }.to raise_error(TypeError, 'text must be a string')
+      it 'raises an error' do
+        expect { instance.bm25(1) }.to raise_error(NoMethodError, "undefined method `to_str' for 1:Integer")
       end
     end
 
     context 'when text is present' do
       it 'sets the keyword_search' do
         instance.bm25('test')
-        expect(instance.instance_variable_get(:@keyword_search)).to eq('test')
+        expect(instance.instance_variable_get(:@keyword_search)).to eq('{ query: "test" }')
       end
     end
 

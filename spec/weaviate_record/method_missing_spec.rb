@@ -48,16 +48,16 @@ describe WeaviateRecord::MethodMissing do
 
   describe '#respond_to_missing?' do
     context 'when it is a missing attribute' do
-      it 'returns false' do
+      it 'returns true' do
         allow(schema).to receive(:attributes_list).and_return(%w[type content])
-        expect(instance).not_to respond_to(:type)
+        expect(instance).to respond_to(:type)
       end
     end
 
     context 'when it ia a meta attribute' do
-      it 'returns false' do
+      it 'returns true' do
         allow(schema).to receive(:attributes_list).and_return([])
-        expect(instance).not_to respond_to(:vector)
+        expect(instance).to respond_to(:vector)
       end
     end
 

@@ -49,7 +49,8 @@ module WeaviateRecord
       response = @connection.delete_where(Queries::Where.to_ruby_hash(@where_query))
       return response['results'] if response.is_a?(Hash) && response.key?('results')
 
-      raise WeaviateRecord::Errors::ServerError, result.dig('error', 'message').presence || 'Unauthorized'
+      raise WeaviateRecord::Errors::ServerError,
+            response == '' ? 'Unauthorized' : response.dig('error', 'message').presence
     end
 
     alias all inspect

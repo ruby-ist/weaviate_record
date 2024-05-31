@@ -111,6 +111,24 @@ RSpec.describe WeaviateRecord::Queries::Where do
     end
   end
 
+  describe '.to_ruby_hash' do
+    let(:where_query) { '{ path: ["title"], operator: Equal, valueText: "test" }' }
+
+    it 'converts graphql where query to ruby hash' do
+      expect(described_class.to_ruby_hash(where_query)).to eq({
+                                                                'path' => ['title'],
+                                                                'operator' => 'Equal',
+                                                                'valueText' => 'test'
+                                                              })
+    end
+
+    it 'raises error when invalid graphql query is given' do
+      expect do
+        described_class.to_ruby_hash('invalid query')
+      end.to raise_error(WeaviateRecord::Errors::WhereQueryConversionError, 'invalid where query format')
+    end
+  end
+
   describe '#process_keyword_conditions' do
     context 'when hash is empty' do
       it 'returns nil when hash is empty' do

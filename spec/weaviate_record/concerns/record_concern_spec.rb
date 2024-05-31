@@ -12,7 +12,7 @@ RSpec.describe WeaviateRecord::Concerns::RecordConcern do
   let(:instance) { klass.new }
 
   before do
-    WeaviateRecord::Concerns::AttributeHandlers.private_instance_methods.each do |method|
+    WeaviateRecord::Concerns::AttributeConcern.private_instance_methods.each do |method|
       allow(instance).to receive(method).with(any_args)
     end
   end

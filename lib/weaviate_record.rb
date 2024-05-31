@@ -1,12 +1,9 @@
 # frozen_string_literal: true
 
 require 'zeitwerk'
-require 'dotenv'
-require 'fileutils'
 require 'active_model'
 require 'active_support/core_ext/string/conversions'
 
-Dotenv.load
 loader = Zeitwerk::Loader.for_gem
 loader.setup
 

@@ -7,7 +7,7 @@ module WeaviateRecord
     module Bm25
       def bm25(text, on_attributes: [])
         text = text.to_str
-        raise WeaviateRecord::Errors::EmptyPrompt, 'text cannot be empty' if text.empty?
+        return self if text.empty?
 
         attributes = on_attributes.map(&:to_s)
         @keyword_search = "{ query: #{text.gsub('"', "'").inspect}" \

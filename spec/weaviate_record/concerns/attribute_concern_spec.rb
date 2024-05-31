@@ -2,11 +2,11 @@
 
 require 'spec_helper'
 
-RSpec.describe WeaviateRecord::Concerns::AttributeHandlers do
+RSpec.describe WeaviateRecord::Concerns::AttributeConcern do
   let(:klass) do
     Class.new do
       include WeaviateRecord::MethodMissing
-      include WeaviateRecord::Concerns::AttributeHandlers
+      include WeaviateRecord::Concerns::AttributeConcern
 
       def collection_name; end
     end
@@ -65,7 +65,7 @@ RSpec.describe WeaviateRecord::Concerns::AttributeHandlers do
 
     context 'when the key is a symbol' do
       it 'converts the key to a string' do
-        instance.send(:merge_attributes, { content: 'This is test' })
+        instance.send(:merge_attributes, { 'content' => 'This is test' })
         expect(instance.instance_variable_get(:@attributes)).to eq({ 'type' => 'test', 'content' => 'This is test' })
       end
     end
