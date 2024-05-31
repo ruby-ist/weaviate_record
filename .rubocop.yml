@@ -10,3 +10,5 @@ RSpec/ExampleLength:
   Enabled: false
 RSpec/AnyInstance:
   Enabled: false
+RSpec/VerifiedDoubleReference:
+  Enabled: false

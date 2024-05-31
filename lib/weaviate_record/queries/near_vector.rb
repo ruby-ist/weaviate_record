@@ -2,7 +2,7 @@
 
 module WeaviateRecord
   module Queries
-    # This module provides method for after query
+    # This module provides method for near vector query
     module NearVector
       def near_vector(vector, distance: WeaviateRecord.config.similarity_search_threshold)
         raise TypeError, "Invalid type #{vector.class} for near vector query" unless vector.is_a?(Array)

@@ -9,12 +9,16 @@ module WeaviateRecord
     include Queries::Count
     include Queries::Limit
     include Queries::NearText
+    include Queries::NearVector
+    include Queries::NearObject
     include Queries::Offset
     include Queries::Order
     include Queries::Select
     include Queries::Where
+    include Queries::Ask
+    include QueryBuilder
 
-    def_delegators(:records, :empty?, :present?)
+    def_delegators(:records, :empty?, :present?, :[])
 
     def initialize(klass)
       @select_options = { attributes: [], nested_attributes: {} }
@@ -33,6 +37,8 @@ module WeaviateRecord
 
     def inspect
       records
+    rescue StandardError => e
+      e
     end
 
     def destroy_all
@@ -48,17 +54,6 @@ module WeaviateRecord
 
     alias all inspect
     alias to_a inspect
-
-    def to_query
-      query_params = { class_name: @klass.to_s, limit: @limit.to_s, offset: @offset.to_s,
-                       fields: combined_select_attributes }
-      query_params[:near_text] = formatted_near_text_value unless @near_text_options[:concepts].empty?
-      query_params[:bm25] = "{ query: #{@keyword_search.inspect} }" if @keyword_search.present?
-      query_params[:where] = @where_query if @where_query
-      # Weaviate doesn't support sorting with bm25 search at the time of writing this code.
-      query_params[:sort] = @sort_options if @keyword_search.blank? && @sort_options
-      query_params
-    end
 
     private
 

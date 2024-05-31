@@ -15,6 +15,9 @@ gem 'zeitwerk'
 group :development, :test do
   # For managing environment variables
   gem 'dotenv'
+
+  # For getting test coverage report
+  gem 'simplecov', require: false
 end
 
 group :lint do

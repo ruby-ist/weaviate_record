@@ -62,5 +62,9 @@ module WeaviateRecord
     # Raised when where condition is not getting converted to Ruby hash
     class WhereQueryConversionError < StandardError
     end
+
+    # Raised when required argument is empty
+    class EmptyPrompt < StandardError
+    end
   end
 end

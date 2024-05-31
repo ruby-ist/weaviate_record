@@ -12,7 +12,8 @@ module WeaviateRecord
 
     class << self
       extend Forwardable
-      def_delegators(:relation, :all, :bm25, :limit, :near_text, :offset, :order, :select, :where, :destroy_all)
+      def_delegators(:relation, :all, :bm25, :limit, :near_text, :near_vector, :near_object,
+                     :offset, :order, :select, :where, :ask, :destroy_all)
 
       def create(**attributes_hash)
         record = new(**attributes_hash)
