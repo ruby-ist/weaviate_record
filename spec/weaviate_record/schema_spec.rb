@@ -37,7 +37,7 @@ RSpec.describe WeaviateRecord::Schema do
       allow(File).to receive(:write)
     end
 
-    let(:schema) { WeaviateRecord::Connection.new.client.schema.list.deep_symbolize_keys! }
+    let(:schema) { WeaviateRecord::Connection.new.schema_list }
 
     it 'writes the db/weaviate/schema.rb file' do
       described_class.update!
@@ -50,8 +50,30 @@ RSpec.describe WeaviateRecord::Schema do
     it 'updates the Weaviate Structure' do
       described_class.update!
       current_schema = described_class.all_collections
-      weaviate_schema = WeaviateRecord::Connection.new.client.schema.list.deep_symbolize_keys!
-      expect(current_schema).to eq(weaviate_schema)
+      expect(current_schema).to eq(schema)
+    end
+  end
+
+  describe '#synced?' do
+    context 'when the schema file is present' do
+      it 'returns true if the schema is synced' do
+        expect(described_class.synced?).to be(true)
+      end
+
+      it 'returns false if the schema is not synced' do
+        allow(described_class).to receive(:schema_list).and_return({})
+        expect(described_class.synced?).to be(false)
+      end
+    end
+
+    context 'when the schema file is not present' do
+      before do
+        allow(File).to receive(:exist?).and_return(false)
+      end
+
+      it 'returns false' do
+        expect(described_class.synced?).to be(false)
+      end
     end
   end
 end

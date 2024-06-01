@@ -58,4 +58,12 @@ RSpec.describe WeaviateRecord::Connection do
       instance.delete_where({ name: 'John' })
     end
   end
+
+  describe '#schema_list' do
+    it 'calls the list method on schema' do
+      allow(instance.client.schema).to receive(:list).and_return({})
+      instance.schema_list
+      expect(instance.client.schema).to have_received(:list)
+    end
+  end
 end

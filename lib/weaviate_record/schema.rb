@@ -9,7 +9,8 @@ module WeaviateRecord
           # frozen_string_literal: true
 
           module WeaviateRecord
-            # Schema module stores the schema of all Weaviate Collections
+            # This class stores the schema of all Weaviate Collections
+            # Don't change it manually, use the WeaviateRecord::Schema.update! method to update the schema
             class Schema
               def self.all_collections # rubocop:disable Metrics/MethodLength
                 #{schema}
@@ -23,6 +24,16 @@ module WeaviateRecord
         create_weaviate_db_dir!
         File.write(WeaviateRecord.config.schema_file_path, STRUCTURE_FILE_BOILERPLATE[pretty_schema])
         rubocop_format_file
+        puts "Weaviate schema file created at #{WeaviateRecord.config.schema_file_path}"
+      end
+
+      def synced?
+        if File.exist?(WeaviateRecord.config.schema_file_path)
+          load WeaviateRecord.config.schema_file_path
+          WeaviateRecord::Schema.all_collections == schema_list
+        else
+          false
+        end
       end
 
       def find_collection(klass)
@@ -37,10 +48,12 @@ module WeaviateRecord
 
       private
 
+      def schema_list
+        WeaviateRecord::Connection.new.schema_list
+      end
+
       def pretty_schema
-        WeaviateRecord::Connection.new.client.schema.list
-                                  .deep_symbolize_keys!
-                                  .pretty_inspect
+        schema_list.pretty_inspect
       end
 
       def rubocop_format_file
@@ -50,7 +63,7 @@ module WeaviateRecord
 
       def create_weaviate_db_dir!
         dir_path = WeaviateRecord.config.schema_file_path.delete_suffix('/schema.rb')
-        FileUtils.mkdir_p(dir_path)
+        FileUtils.mkdir_p(dir_path) unless File.directory?(dir_path)
       end
     end
 

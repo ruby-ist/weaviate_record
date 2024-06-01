@@ -1,7 +1,8 @@
 # frozen_string_literal: true
 
 module WeaviateRecord
-  # Schema module stores the schema of all Weaviate Collections
+  # This class stores the schema of all Weaviate Collections
+  # Don't change it manually, use the WeaviateRecord::Schema.update! method to update the schema
   class Schema
     def self.all_collections # rubocop:disable Metrics/MethodLength
       { classes: [{ class: 'Article',

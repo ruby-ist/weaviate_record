@@ -40,5 +40,9 @@ module WeaviateRecord
     def delete_where(condition)
       client.objects.batch_delete(class_name: collection_name, where: condition)
     end
+
+    def schema_list
+      client.schema.list.deep_symbolize_keys!
+    end
   end
 end
