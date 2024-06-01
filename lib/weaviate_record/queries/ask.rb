@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module WeaviateRecord
-  module Queries
+  module Queries # :nodoc:
     # This module provides method for ask query
     module Ask
       def ask(question, on_attributes: [])

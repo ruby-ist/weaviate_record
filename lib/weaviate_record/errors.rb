@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
-# custom errors for Weaviate
-module WeaviateRecord
+module WeaviateRecord # :nodoc: all
   module Errors
     # Used when an un-queried attribute is accessed
     class MissingAttributeError < StandardError

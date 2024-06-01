@@ -1,8 +1,7 @@
 # frozen_string_literal: true
 
 module WeaviateRecord
-  # Method missing definition for Weaviate Record
-  module MethodMissing
+  module MethodMissing # :nodoc:
     private
 
     def list_of_all_attributes

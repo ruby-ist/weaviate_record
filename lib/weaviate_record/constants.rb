@@ -1,8 +1,7 @@
 # frozen_string_literal: true
 
 module WeaviateRecord
-  # A module to store all Weaviate related constants
-  module Constants
+  module Constants # :nodoc:
     SPECIAL_ATTRIBUTE_MAPPINGS = { 'feature_projection' => 'featureProjection',
                                    'created_at' => 'creationTimeUnix',
                                    'updated_at' => 'lastUpdateTimeUnix',

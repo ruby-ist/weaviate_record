@@ -1,8 +1,7 @@
 # frozen_string_literal: true
 
-module WeaviateRecord
+module WeaviateRecord # :nodoc: all
   module Concerns
-    # Helpers functions to handle the record attributes mapping
     module AttributeConcern
       private
 

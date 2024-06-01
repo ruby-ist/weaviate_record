@@ -5,8 +5,10 @@ require 'weaviate'
 module WeaviateRecord
   # This module will act as a connection to Weaviate database
   class Connection
-    attr_reader :client, :collection_name
+    # Returns a _Weaviate::Client_ object, which is used to interact with the Weaviate database.
+    attr_reader :client
 
+    # Creates a new Connection to the Weaviate database.
     def initialize(collection_name = nil)
       @collection_name = collection_name&.to_s
       @client = Weaviate::Client.new(
@@ -17,32 +19,35 @@ module WeaviateRecord
       )
     end
 
+    # Returns the present schema of the Weaviate database.
+    def schema_list
+      client.schema.list.deep_symbolize_keys!
+    end
+
+    # :enddoc:
+
     def find_call(id)
-      client.objects.get(class_name: collection_name, id: id)
+      client.objects.get(class_name: @collection_name, id: id)
     end
 
     def create_call(properties)
-      client.objects.create(class_name: collection_name, properties: properties)
+      client.objects.create(class_name: @collection_name, properties: properties)
     end
 
     def update_call(id, properties)
-      client.objects.update(class_name: collection_name, id: id, properties: properties)
+      client.objects.update(class_name: @collection_name, id: id, properties: properties)
     end
 
     def delete_call(id)
-      client.objects.delete(class_name: collection_name, id: id)
+      client.objects.delete(class_name: @collection_name, id: id)
     end
 
     def check_existence(id)
-      client.objects.exists?(class_name: collection_name, id: id)
+      client.objects.exists?(class_name: @collection_name, id: id)
     end
 
     def delete_where(condition)
-      client.objects.batch_delete(class_name: collection_name, where: condition)
-    end
-
-    def schema_list
-      client.schema.list.deep_symbolize_keys!
+      client.objects.batch_delete(class_name: @collection_name, where: condition)
     end
   end
 end

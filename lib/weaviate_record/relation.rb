@@ -20,8 +20,9 @@ module WeaviateRecord
     include Queries::Ask
     include QueryBuilder
 
-    def_delegators(:records, :empty?, :present?, :[])
+    def_delegators(:records, :empty?, :present?, :[], :first, :last)
 
+    # :stopdoc:
     def initialize(klass)
       @select_options = { attributes: [], nested_attributes: {} }
       @near_text_options = { concepts: [], distance: WeaviateRecord.config.similarity_search_threshold }
@@ -32,6 +33,7 @@ module WeaviateRecord
       @loaded = false
       @connection = WeaviateRecord::Connection.new(@klass)
     end
+    # :startdoc:
 
     def each(&block)
       records.each(&block)

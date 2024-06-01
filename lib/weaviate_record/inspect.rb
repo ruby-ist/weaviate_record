@@ -1,8 +1,7 @@
 # frozen_string_literal: true
 
 module WeaviateRecord
-  # Inspect definition for Weaviate Record
-  module Inspect
+  module Inspect # :nodoc:
     def inspect
       special_attributes, inspection = format_attributes
       string = to_s

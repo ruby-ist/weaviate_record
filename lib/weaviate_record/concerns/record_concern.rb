@@ -1,8 +1,7 @@
 # frozen_string_literal: true
 
-module WeaviateRecord
+module WeaviateRecord # :nodoc: all
   module Concerns
-    # Helper functions for WeaviateRecord class
     module RecordConcern
       extend ActiveSupport::Concern
       include AttributeConcern

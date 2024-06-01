@@ -16,6 +16,8 @@ module WeaviateRecord
         self
       end
 
+      # :enddoc:
+
       def self.to_ruby_hash(string_condition)
         pattern = /(?<=\s)\w+:|(?<=operator:\s)\w+/
         keys_and_operator = string_condition.scan(pattern).uniq
