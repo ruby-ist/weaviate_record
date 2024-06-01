@@ -9,14 +9,18 @@ loader.setup
 
 # Starting point of the gem
 module WeaviateRecord
-  def self.config
-    @config ||= Struct.new(
-      :similarity_search_threshold,
-      :schema_file_path
-    ).new(0.55, "#{Object.const_defined?('Rails') ? Rails.root : Dir.pwd}/db/weaviate/schema.rb")
+  class << self
+    def config
+      @config ||= Struct.new(
+        :similarity_search_threshold,
+        :schema_file_path,
+        :sync_schema_on_load
+      ).new(0.55, "#{Object.const_defined?('Rails') ? Rails.root : Dir.pwd}/db/weaviate/schema.rb", false)
+    end
 
-    yield @config if block_given?
-
-    @config
+    def configure
+      yield config if block_given?
+      WeaviateRecord::Schema.update! if config.sync_schema_on_load && !WeaviateRecord::Schema.synced?
+    end
   end
 end

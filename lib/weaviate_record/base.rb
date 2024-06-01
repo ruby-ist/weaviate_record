@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'forwardable'
+
 module WeaviateRecord
   # Base class for Weaviate records
   class Base

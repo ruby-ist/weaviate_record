@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'json'
+
 module WeaviateRecord
   module Queries
     # This module contains function to perform where query on Weaviate

@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'forwardable'
+
 module WeaviateRecord
   # This class is used to build weaviate queries
   class Relation

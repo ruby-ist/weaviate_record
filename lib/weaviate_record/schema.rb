@@ -24,7 +24,7 @@ module WeaviateRecord
         create_weaviate_db_dir!
         File.write(WeaviateRecord.config.schema_file_path, STRUCTURE_FILE_BOILERPLATE[pretty_schema])
         rubocop_format_file
-        puts "Weaviate schema file created at #{WeaviateRecord.config.schema_file_path}"
+        nil
       end
 
       def synced?
@@ -58,7 +58,7 @@ module WeaviateRecord
 
       def rubocop_format_file
         # To prettify the generated file
-        system("rubocop -a #{WeaviateRecord.config.schema_file_path}", out: File::NULL)
+        system("rubocop -a #{WeaviateRecord.config.schema_file_path}", %i[err out] => File::NULL)
       end
 
       def create_weaviate_db_dir!

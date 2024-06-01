@@ -9,6 +9,10 @@ Dotenv.load
 
 require_relative '../lib/weaviate_record'
 
+WeaviateRecord.configure do |config|
+  config.sync_schema_on_load = true
+end
+
 class Article < WeaviateRecord::Base; end
 
 IRB.start

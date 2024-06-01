@@ -39,13 +39,24 @@ RSpec.describe WeaviateRecord do
         expect(described_class.config.schema_file_path).to eql('/rails/root/db/weaviate/schema.rb')
       end
     end
+  end
 
+  describe '.configure' do
     it 'accepts block and yield config struct' do
-      described_class.config do |config|
+      described_class.configure do |config|
         config.similarity_search_threshold = 0.6
       end
 
       expect(described_class.config.similarity_search_threshold).to be(0.6)
+    end
+
+    it 'syncs schema if sync_schema_on_load is true' do
+      allow(WeaviateRecord::Schema).to receive(:synced?).and_return(false)
+      expect(WeaviateRecord::Schema).to receive(:update!)
+
+      described_class.configure do |config|
+        config.sync_schema_on_load = true
+      end
     end
   end
 end
