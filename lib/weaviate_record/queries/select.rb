@@ -4,6 +4,26 @@ module WeaviateRecord
   module Queries
     # This module contains function to perform select query on Weaviate
     module Select
+      # Select the attributes to be fetched from the database.
+      # You can also pass nested attributes to be fetched.
+      # Meta attributes that needs to be fetched should be passed aa a value for key '_additional'.
+      # In Weaviate, +id+ is also a meta attribute.
+      # If select is not called on a Weaviate query, by default
+      # it will fetch all normak attributes with id and timestamps.
+      #
+      # ==== Example:
+      #   Article.select(:content, :title)
+      #   Article.select(_additional: :vector)
+      #   Article.select( _additional: [:id, :created_at, :updated_at])
+      #   Article.select(_additional: { answer: :result })
+      #
+      #   Article.all #=> fetches id, content, title, created_at, updated_at
+      #
+      # There is one more special scenario where you can pass the graphql query directly.
+      # It will be used for summarization offered by summarizer module.
+      #
+      # ==== Example:
+      #   Article.select(_additional: 'summary(properties: ["content"]) { result }')
       def select(*args)
         args.each do |arg|
           if arg.is_a? Hash

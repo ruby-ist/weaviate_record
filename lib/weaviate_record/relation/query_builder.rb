@@ -4,6 +4,16 @@ module WeaviateRecord
   class Relation
     # This module contains methods which helps to build query for Weaviate
     module QueryBuilder
+      # This will return the query that will be sent to Weaviate. More like +to_sql+ in ActiveRecord.
+      #
+      # ==== Example:
+      #   Article.select(:title, :content).near_text('friendship movie').limit(5).offset(2).to_query
+      # Returns:
+      #   {:class_name=>"Article",
+      #    :limit=>"5",
+      #    :offset=>"2",
+      #    :fields=>"title content",
+      #    :near_text=>"{ concepts: [\"friendship movie\"], distance: 0.55 }"}
       def to_query
         query_params = basic_params
         fill_up_keyword_search_param(query_params)

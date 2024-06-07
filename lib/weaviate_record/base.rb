@@ -24,7 +24,7 @@ module WeaviateRecord
       # ==== Example:
       #  Article.create(title: 'Hello World', content: 'This is the content of the article')
       #
-      #  # => #<Article id: "f3b1b3b1-0b3b-4b3b-8b3b-0b3b3b3b3b3b", ...>
+      #  # => #<Article:0x0000000105468ab0 id: "8280210b-9372-4e70-a045-beb7c12a9a24" ...>
       def create(**attributes_hash)
         record = new(**attributes_hash)
         record.save
@@ -37,7 +37,7 @@ module WeaviateRecord
       # ==== Example:
       #   Article.find('f3b1b3b1-0b3b-4b3b-8b3b-0b3b3b3b3b3b')
       #
-      #   # => #<Article id: "f3b1b3b1-0b3b-4b3b-8b3b-0b3b3b3b3b3b" ....>
+      #   #<Article:0x0000000105468ab0 id: "8280210b-9372-4e70-a045-beb7c12a9a24" ...>
       def find(id)
         result = connection.find_call(id)
         if result.is_a?(Hash) && result['id']
@@ -100,7 +100,7 @@ module WeaviateRecord
     # ==== Example:
     #  Article.new(title: 'Hello World', content: 'This is the content of the article')
     #
-    #  # => #<Article title: "Hello World", content: "This is the content of the article">
+    #  # => #<Article:0x0000000105468ab0 ... "Hello World", content: "This is the content of the article">
     #
     #  Article.title # => "Hello World"
     #  Article.content # => "This is the content of the article"

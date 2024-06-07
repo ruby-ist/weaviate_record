@@ -35,16 +35,25 @@ module WeaviateRecord
     end
     # :startdoc:
 
+    # To enumerate over each record in the Weaviate relation
     def each(&block)
       records.each(&block)
     end
 
-    def inspect
+    # Gets all the records from Weaviate matching the given conditions or search filters given in the query.
+    # This will return an array of WeaviateRecord objects.
+    def all
       records
     rescue StandardError => e
       e
     end
 
+    # Deletes all the records from Weaviate matching the given conditions or search filters given in the query.
+    # This will return the result of batch delete operation given by Weaviate.
+    #
+    # ==== Example:
+    #   Article.where(title: nil).destroy_all
+    #   # => {"failed"=>0, "limit"=>10000, "matches"=>3, "objects"=>nil, "successful"=>3}
     def destroy_all
       unless @where_query
         raise WeaviateRecord::Errors::MissingWhereCondition, 'must specifiy atleast one where condition'
@@ -57,8 +66,8 @@ module WeaviateRecord
             response == '' ? 'Unauthorized' : response.dig('error', 'message').presence
     end
 
-    alias all inspect
-    alias to_a inspect
+    alias inspect all
+    alias to_a all
 
     private
 

@@ -92,7 +92,7 @@ module WeaviateRecord
       @schema[:properties].map { |property| property[:name] }
     end
 
-    # This method returns the schema of the collection in Hash format
+    # This attribute returns the schema of the collection in Hash format
     attr_reader :schema
 
     # :enddoc:

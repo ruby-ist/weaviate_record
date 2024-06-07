@@ -4,6 +4,16 @@ module WeaviateRecord
   module Queries
     # This module contains function to sort Weaviate records
     module Order
+      # Sort the records based on the given attributes.
+      # You can pass multiple attributes to sort the records.
+      # This sorting specification will be ignored if you are performing keyword (bm25) search.
+      #
+      # ==== Example:
+      #    Article.order(:title)
+      #    # Sorts the records based on title in ascending order
+      #
+      #    Article.order(:title, created_at: :desc)
+      #    # Sorts the records based on title in ascending order and created_at in descending order
       def order(*args, **kw_args)
         raise ArgumentError, 'expected at least one argument' if args.empty? && kw_args.empty?
 

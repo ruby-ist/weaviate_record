@@ -6,6 +6,14 @@ module WeaviateRecord
   module Queries
     # This module contains function to perform where query on Weaviate
     module Where
+      # Perform a where query on the collection. You can pass a string or keyword arguments as a query.
+      # It follows the same syntax as ActiveRecord where query. Chaining of where queries is also supported.
+      #
+      # ==== Example:
+      #  Article.where('title = ?', 'Hello World')
+      #  Article.where(title: 'Hello World')
+      #  Article.where('title = ? AND content = ?', 'Hello World', 'This is a content')
+      #  Article.where(title: 'Hello World').where(content: 'This is a content')
       def where(query = '', *values, **kw_args)
         validate_arguments(query, values, kw_args)
         keyword_query = process_keyword_conditions(kw_args)
