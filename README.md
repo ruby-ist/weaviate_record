@@ -1,5 +1,10 @@
 ## WeaviateRecord
 
+![Tests status](https://github.com/ruby-ist/weaviate_record/actions/workflows/gem-push.yml/badge.svg)
+![Gem Version](https://badge.fury.io/rb/weaviate_record.svg)
+[![Docs](http://img.shields.io/badge/yard-docs-yellow.svg)](http://rubydoc.info/gems/weaviate_record)
+[![License](https://img.shields.io/badge/license-MIT-orange.svg)](https://github.com/ruby-ist/weaviate_record/blob/main/LICENSE.txt)
+
 An ORM for `Weaviate` vector database that follows the same conventions as the `ActiveRecord`.
 
 This gem uses [weaviate-ruby](https://github.com/patterns-ai-core/weaviate-ruby) internally to connect with `Weaviate` DB.
