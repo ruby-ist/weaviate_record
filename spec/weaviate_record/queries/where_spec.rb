@@ -9,11 +9,14 @@ RSpec.describe WeaviateRecord::Queries::Where do
     end
   end
   let(:instance) { klass.new }
+  let(:schema) { WeaviateRecord::Schema.send(:new, {}) }
 
   before do
     described_class.private_instance_methods.each do |method|
       allow(instance).to receive(method).with(any_args).and_call_original
     end
+    allow(WeaviateRecord::Schema).to receive(:find_collection).with(any_args).and_return(schema)
+    allow(schema).to receive(:attributes_list).and_return(%w[title content author])
   end
 
   describe '#where' do
@@ -285,6 +288,19 @@ RSpec.describe WeaviateRecord::Queries::Where do
                              %w[content
                                 =
                                 article])).to eq('{ path: ["content"], operator: Equal, valueText: "article" }')
+      end
+    end
+  end
+
+  describe '#validate_attribute!' do
+    context 'when attribute is not present in schema' do
+      before { instance.instance_variable_set(:@klass, 'Article') }
+
+      it 'raises an error' do
+        expect do
+          instance.send(:validate_attribute!, 'foo')
+        end.to raise_error(WeaviateRecord::Errors::InvalidAttributeError,
+                           'Invalid attribute foo used for collection Article')
       end
     end
   end

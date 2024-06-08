@@ -24,7 +24,7 @@ RSpec.describe WeaviateRecord::Relation::QueryBuilder do
     end
 
     it 'adds where field optionally' do
-      relation.where(type: 'article')
+      relation.where(title: 'article')
       expect(relation.to_query).to have_key(:where)
     end
   end

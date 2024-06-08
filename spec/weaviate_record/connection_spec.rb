@@ -21,6 +21,13 @@ RSpec.describe WeaviateRecord::Connection do
                                                                properties: { name: 'John' })
       instance.create_call({ name: 'John' })
     end
+
+    it 'raises an error if database is not connected' do
+      allow(instance).to receive(:client).and_raise(Faraday::ConnectionFailed.new('Failed to connect'))
+      expect do
+        instance.create_call({ name: 'John' })
+      end.to raise_error(WeaviateRecord::Errors::DatabaseNotConnected, 'Failed to connect')
+    end
   end
 
   describe '#update_call' do
@@ -29,12 +36,26 @@ RSpec.describe WeaviateRecord::Connection do
                                                                properties: { name: 'John' })
       instance.update_call('123', { name: 'John' })
     end
+
+    it 'raises an error if database is not connected' do
+      allow(instance).to receive(:client).and_raise(Faraday::ConnectionFailed.new('Failed to connect'))
+      expect do
+        instance.update_call('123', { name: 'John' })
+      end.to raise_error(WeaviateRecord::Errors::DatabaseNotConnected, 'Failed to connect')
+    end
   end
 
   describe '#delete_call' do
     it 'calls the delete method on objects' do
       expect(instance.client.objects).to receive(:delete).with(class_name: 'Article', id: '123')
       instance.delete_call('123')
+    end
+
+    it 'raises an error if database is not connected' do
+      allow(instance).to receive(:client).and_raise(Faraday::ConnectionFailed.new('Failed to connect'))
+      expect do
+        instance.delete_call('123')
+      end.to raise_error(WeaviateRecord::Errors::DatabaseNotConnected, 'Failed to connect')
     end
   end
 
@@ -43,12 +64,26 @@ RSpec.describe WeaviateRecord::Connection do
       expect(instance.client.objects).to receive(:get).with(class_name: 'Article', id: '123')
       instance.find_call('123')
     end
+
+    it 'raises an error if database is not connected' do
+      allow(instance).to receive(:client).and_raise(Faraday::ConnectionFailed.new('Failed to connect'))
+      expect do
+        instance.find_call('123')
+      end.to raise_error(WeaviateRecord::Errors::DatabaseNotConnected, 'Failed to connect')
+    end
   end
 
   describe '#check_existence' do
     it 'calls the exists? method on objects' do
       expect(instance.client.objects).to receive(:exists?).with(class_name: 'Article', id: '123')
       instance.check_existence('123')
+    end
+
+    it 'raises an error if database is not connected' do
+      allow(instance).to receive(:client).and_raise(Faraday::ConnectionFailed.new('Failed to connect'))
+      expect do
+        instance.check_existence('123')
+      end.to raise_error(WeaviateRecord::Errors::DatabaseNotConnected, 'Failed to connect')
     end
   end
 
@@ -57,6 +92,13 @@ RSpec.describe WeaviateRecord::Connection do
       expect(instance.client.objects).to receive(:batch_delete).with(class_name: 'Article', where: { name: 'John' })
       instance.delete_where({ name: 'John' })
     end
+
+    it 'raises an error if database is not connected' do
+      allow(instance).to receive(:client).and_raise(Faraday::ConnectionFailed.new('Failed to connect'))
+      expect do
+        instance.delete_where({ name: 'John' })
+      end.to raise_error(WeaviateRecord::Errors::DatabaseNotConnected, 'Failed to connect')
+    end
   end
 
   describe '#schema_list' do
@@ -64,6 +106,13 @@ RSpec.describe WeaviateRecord::Connection do
       allow(instance.client.schema).to receive(:list).and_return({})
       instance.schema_list
       expect(instance.client.schema).to have_received(:list)
+    end
+
+    it 'raises an error if database is not connected' do
+      allow(instance).to receive(:client).and_raise(Faraday::ConnectionFailed.new('Failed to connect'))
+      expect do
+        instance.schema_list
+      end.to raise_error(WeaviateRecord::Errors::DatabaseNotConnected, 'Failed to connect')
     end
   end
 end

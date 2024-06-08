@@ -88,10 +88,19 @@ module WeaviateRecord
       def create_query_condition(equation)
         return null_condition(equation[0]) if equation[2].nil?
 
+        validate_attribute!(equation[0])
         handle_timestamps_condition(equation)
         "{ path: [\"#{equation[0]}\"], " \
           "operator: #{map_operator(equation[1])}, " \
           "#{map_value_type(equation[2])}: #{equation[2].inspect} }"
+      end
+
+      def validate_attribute!(attribute)
+        unless ['id', 'created_at', 'updated_at',
+                *WeaviateRecord::Schema.find_collection(@klass).attributes_list].include?(attribute)
+          raise WeaviateRecord::Errors::InvalidAttributeError,
+                "Invalid attribute #{attribute} used for collection #{@klass}"
+        end
       end
 
       def handle_timestamps_condition(equation_array)

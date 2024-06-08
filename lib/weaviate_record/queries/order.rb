@@ -6,7 +6,7 @@ module WeaviateRecord
     module Order
       # Sort the records based on the given attributes.
       # You can pass multiple attributes to sort the records.
-      # This sorting specification will be ignored if you are performing keyword (bm25) search.
+      # This sorting specification will be ignored if you are performing +bm25+ search.
       #
       # ==== Example:
       #    Article.order(:title)

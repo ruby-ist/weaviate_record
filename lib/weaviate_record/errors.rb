@@ -65,5 +65,9 @@ module WeaviateRecord # :nodoc: all
     # Raised when required argument is empty
     class EmptyPrompt < StandardError
     end
+
+    # Raised when the weaviate database is not connected
+    class DatabaseNotConnected < StandardError
+    end
   end
 end
