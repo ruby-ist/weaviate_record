@@ -4,7 +4,8 @@ Gem::Specification.new do |s|
   s.name = 'weaviate_record'
   s.version     = '0.0.1'
   s.summary     = 'An ORM for Weaviate vector database'
-  s.description = ''
+  s.description = 'An ORM for Weaviate vector database that follows the same conventions as the ActiveRecord. ' \
+                  'This gem uses weaviate-ruby internally to connect with weaviate database.'
   s.required_ruby_version = '>= 2.6.0'
   s.authors     = ['Sriram V']
   s.email       = 'srira.venkat@gmail.com'

@@ -33,7 +33,7 @@ WeaviateRecord.configure do |config|
 
   # The file path where WeaviateRecord stores the local copy of your Weaviate database schema.
   # If Rails is installed in your project, the default value is "#{Rails.root}/db/weaviate/schema.rb"
-  # Otherwise, the default value i "#{Dir.pwd}/db/weaviate/schema.rb"
+  # Otherwise, the default value is "#{Dir.pwd}/db/weaviate/schema.rb"
   config.schema_file_path = "#{Rails.root}/db/weaviate/schema.rb"
 
 end
@@ -51,4 +51,4 @@ class Article < WeaviateRecord::Base
 end
 ```
 
-And that's all. Now, you can use create and modify `weaviate` records as you do in the `ActiveRecord`. The syntax is exactly same with few naunces.
+And that's all. Now, you can create and modify `weaviate` records as you do in the `ActiveRecord`. The syntax is exactly same with few naunces.
