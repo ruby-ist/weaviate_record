@@ -2,10 +2,10 @@
 
 Gem::Specification.new do |s|
   s.name = 'weaviate_record'
-  s.version     = '0.1.0'
+  s.version     = '0.1.1'
   s.summary     = 'An ORM for Weaviate vector database'
-  s.description = 'An ORM for Weaviate vector database that follows the same conventions as the ActiveRecord. ' \
-                  'Bring the power of Vector database and Retrieval augmented generation (RAG) ' \
+  s.description = 'An ORM for Weaviate vector database that follows the same conventions as the ActiveRecord and ' \
+                  'brings the power of Vector database and Retrieval augmented generation (RAG) ' \
                   'to your Ruby application.'
   s.required_ruby_version = '>= 2.6.0'
   s.authors     = ['Sriram V']

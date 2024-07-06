@@ -5,7 +5,7 @@
 [![Docs](http://img.shields.io/badge/yard-docs-chartreuse.svg)](http://rubydoc.info/gems/weaviate_record)
 [![License](https://img.shields.io/badge/license-MIT-limegreen.svg)](https://github.com/ruby-ist/weaviate_record/blob/main/LICENSE.txt)
 
-An ORM for `Weaviate` vector database that follows the same conventions as the `ActiveRecord`. Bring the power of Vector database and Retrieval augmented generation (RAG) to your Ruby application.
+An ORM for `Weaviate` vector database that follows the same conventions as the `ActiveRecord` and brings the power of Vector database and Retrieval augmented generation (RAG) to your Ruby application.
 
 This gem uses [weaviate-ruby](https://github.com/patterns-ai-core/weaviate-ruby) internally to connect with `Weaviate` DB.
 
